@@ -242,6 +242,7 @@
 //! this data structure is straight-line code with no need for branching.
 
 #![no_std]
+#![allow(clippy::doc_markdown, clippy::must_use_candidate)]
 
 #[rustfmt::skip]
 mod tables;

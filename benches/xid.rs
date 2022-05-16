@@ -12,6 +12,8 @@
 // readme is computed by subtracting this baseline from the other bench
 // functions' time, then dividing by one million (ms -> ns).
 
+#![allow(clippy::needless_pass_by_value)]
+
 #[path = "../tests/fst/mod.rs"]
 mod fst;
 #[path = "../tests/roaring/mod.rs"]

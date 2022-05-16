@@ -1,3 +1,5 @@
+#![allow(clippy::unreadable_literal)]
+
 use std::mem::size_of_val;
 
 #[test]
@@ -18,6 +20,7 @@ fn test_size() {
 #[test]
 fn test_trieset_size() {
     #[deny(dead_code)]
+    #[allow(clippy::redundant_static_lifetimes)]
     #[path = "trie/trie.rs"]
     mod trie;
 
