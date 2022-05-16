@@ -92,6 +92,51 @@ char and high char. I don't expect that performance would improve much but this
 could be the most efficient for space across all the libraries, needing only
 about 7 K to store.
 
+#### ucd-trie
+
+Their data structure is a compressed trie set specifically tailored for Unicode
+codepoints. The design is credited to Raph Levien in [rust-lang/rust#33098].
+
+[rust-lang/rust#33098]: https://github.com/rust-lang/rust/pull/33098
+
+```rust
+pub struct TrieSet {
+    tree1_level1: &'static [u64; 32],
+    tree2_level1: &'static [u8; 992],
+    tree2_level2: &'static [u64],
+    tree3_level1: &'static [u8; 256],
+    tree3_level2: &'static [u8],
+    tree3_level3: &'static [u64],
+}
+```
+
+It represents codepoint sets using a trie to achieve prefix compression. The
+final states of the trie are embedded in leaves or "chunks", where each chunk is
+a 64-bit integer. Each bit position of the integer corresponds to whether a
+particular codepoint is in the set or not. These chunks are not just a compact
+representation of the final states of the trie, but are also a form of suffix
+compression. In particular, if multiple ranges of 64 contiguous codepoints have
+the same Unicode properties, then they all map to the same chunk in the final
+level of the trie.
+
+Being tailored for Unicode codepoints, this trie is partitioned into three
+disjoint sets: tree1, tree2, tree3. The first set corresponds to codepoints \[0,
+0x800), the second \[0x800, 0x10000) and the third \[0x10000, 0x110000). These
+partitions conveniently correspond to the space of 1 or 2 byte UTF-8 encoded
+codepoints, 3 byte UTF-8 encoded codepoints and 4 byte UTF-8 encoded codepoints,
+respectively.
+
+Lookups in this data structure are significantly more efficient than binary
+search. A lookup touches either 1, 2, or 3 cache lines based on which of the
+trie partitions is being accessed.
+
+One possible performance improvement would be for this crate to expose a way to
+query based on a UTF-8 encoded string, returning the Unicode property
+corresponding to the first character in the string. Without such an API, the
+caller is required to tokenize their UTF-8 encoded input data into `char`, hand
+the `char` into `ucd-trie`, only for `ucd-trie` to undo that work by converting
+back into the variable-length representation for trie traversal.
+
 <br>
 
 ## License
