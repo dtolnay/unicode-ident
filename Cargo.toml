@@ -5,5 +5,8 @@ authors = ["David Tolnay <dtolnay@gmail.com>"]
 edition = "2021"
 publish = false
 
+[dev-dependencies]
+ucd-trie = { version = "0.1", default-features = false }
+
 [workspace]
 members = ["diagram", "generate"]
