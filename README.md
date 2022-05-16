@@ -176,6 +176,84 @@ investigate further.
 
 [`croaring`]: https://crates.io/crates/croaring
 
+#### unicode-ident
+
+This crate is most similar to the `ucd-trie` library, in that it's based on
+bitmaps stored in the leafs of a trie representation, achieving both prefix
+compression and suffix compression.
+
+The key differences are:
+
+- Uses a single 2-level trie, rather than 3 disjoint partitions of different
+  depth each.
+- Uses significantly larger chunks: 512 bits rather than 64 bits.
+- Compresses the XID\_Start and XID\_Continue properties together
+  simultaneously, rather than duplicating identical trie leaf chunks across the
+  two.
+
+The following diagram show the XID\_Start and XID\_Continue Unicode boolean
+properties in uncompressed form, in row-major order:
+
+<table>
+<tr><th>XID_Start</th><th>XID_Continue</th></tr>
+<tr>
+<td><img alt="XID_Start bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647353-c6eeb922-afec-49b2-9ef5-c03e9d1e0760.png"></td>
+<td><img alt="XID_Continue bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647367-f447cca7-2362-4d7d-8cd7-d21c011d329b.png"></td>
+</tr>
+</table>
+
+Uncompressed, these would take 140 K to store, which is beyond what would be
+reasonable. However, as you can see there is a large degree of similarity
+between the two bitmaps and across the rows, which lends well to compression.
+
+This crate stores one 512-bit "row" of the above bitmaps in the leaf level of a
+trie, and a single additional level to index into the leafs. It turns out there
+are 124 unique 512-bit chunks across the two bitmaps so 7 bits are sufficient to
+index them.
+
+The chunk size of 512 bits is selected as the size that minimizes the total size
+of the data structure. A smaller chunk, like 256 or 128 bits, would achieve
+better deduplication but require a larger index. A larger chunk would increase
+redundancy in the leaf bitmaps. 512 bit chunks are the optimum for total size of
+the index plus leaf bitmaps.
+
+In fact since there are only 124 unique chunks, we can use an 8-bit index with a
+spare bit to index at the half-chunk level. This achieves an additional 8.5%
+compression by eliminating redundancies between the second half of any chunk and
+the first half of any other chunk. Note that this is not the same as using
+chunks which are half the size, because it does not necessitate raising the size
+of the trie's first level.
+
+In contrast to binary search or the `ucd-trie` crate, performing lookups in this
+data structure is straight-line code with no need for branching.
+
+```asm
+is_xid_start:
+	mov eax, edi
+	shr eax, 9
+	lea rcx, [rip + unicode_ident::tables::TRIE_START]
+	add rcx, rax
+	xor eax, eax
+	cmp edi, 201728
+	cmovb rax, rcx
+	test rax, rax
+	lea rcx, [rip + .L__unnamed_1]
+	cmovne rcx, rax
+	movzx eax, byte ptr [rcx]
+	shl rax, 5
+	mov ecx, edi
+	shr ecx, 3
+	and ecx, 63
+	add rcx, rax
+	lea rax, [rip + unicode_ident::tables::LEAF]
+	mov al, byte ptr [rax + rcx]
+	and dil, 7
+	mov ecx, edi
+	shr al, cl
+	and al, 1
+	ret
+```
+
 <br>
 
 ## License
