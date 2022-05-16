@@ -153,6 +153,29 @@ specialize for the fact that only 21 of the 32 bits in a `char` are meaningful.
 There are some dense arrays in the structure with large ranges that could never
 possibly be used.
 
+#### roaring
+
+This crate is a pure-Rust implementation of [Roaring Bitmap], a data structure
+designed for storing sets of 32-bit unsigned integers.
+
+[Roaring Bitmap]: https://roaringbitmap.org/about/
+
+Roaring bitmaps are compressed bitmaps which tend to outperform conventional
+compressed bitmaps such as WAH, EWAH or Concise. In some instances, they can be
+hundreds of times faster and they often offer significantly better compression.
+
+In this use case the performance was reasonably competitive but still
+substantially slower than the Unicode-optimized crates. Meanwhile the
+compression was significantly worse, requiring 6&times; as much storage for the
+data structure.
+
+I also benchmarked the [`croaring`] crate which is an FFI wrapper around the C
+reference implementation of Roaring Bitmap. This crate was consistently about
+15% slower than pure-Rust `roaring`, which could just be FFI overhead. I did not
+investigate further.
+
+[`croaring`]: https://crates.io/crates/croaring
+
 <br>
 
 ## License
