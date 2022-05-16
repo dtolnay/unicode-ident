@@ -6,6 +6,7 @@ edition = "2021"
 publish = false
 
 [dev-dependencies]
+fst = "0.4"
 ucd-trie = { version = "0.1", default-features = false }
 
 [workspace]
