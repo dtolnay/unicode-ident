@@ -47,6 +47,53 @@ and may be repeated by running `cargo criterion`.
 
 <br>
 
+## Comparison of data structures
+
+#### unicode-xid
+
+They use a sorted array of character ranges, and do a binary search to look up
+whether a given character lands inside one of those ranges.
+
+```rust
+static XID_Continue_table: [(char, char); 763] = [
+    ('\u{30}', '\u{39}'),  // 0-9
+    ('\u{41}', '\u{5a}'),  // A-Z
+    …
+    ('\u{e0100}', '\u{e01ef}'),
+];
+```
+
+The static storage used by this data structure scales with the number of
+contiguous ranges of identifier codepoints in Unicode. Every table entry
+consumes 8 bytes, because it consists of a pair of 32-bit `char` values.
+
+In some ranges of the Unicode codepoint space, this is quite a sparse
+representation &ndash; there are some ranges where tens of thousands of adjacent
+codepoints are all valid identifier characters. In other places, the
+representation is quite inefficient. A characater like `µ` (U+00B5) which is
+surrounded by non-identifier codepoints consumes 64 bits in the table, while it
+would be just 1 bit in a dense bitmap.
+
+On a system with 64-byte cache lines, binary searching the table touches 7 cache
+lines on average. Each cache line fits only 8 table entries. Additionally, the
+branching performed during the binary search is probably mostly unpredictable to
+the branch predictor.
+
+Overall, the crate ends up being about 10&times; slower on non-ASCII input
+compared to the fastest crate.
+
+A potential improvement would be to pack the table entries more compactly.
+Rust's `char` type is a 21-bit integer padded to 32 bits, which means every
+table entry is holding 22 bits of wasted space, adding up to 3.9 K. They could
+instead fit every table entry into 6 bytes, leaving out some of the padding, for
+a 25% improvement in space used. With some cleverness it may be possible to fit
+in 5 bytes or even 4 bytes by storing a low char and an extent, instead of low
+char and high char. I don't expect that performance would improve much but this
+could be the most efficient for space across all the libraries, needing only
+about 7 K to store.
+
+<br>
+
 ## License
 
 <sup>
