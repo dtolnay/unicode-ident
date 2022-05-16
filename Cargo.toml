@@ -1,0 +1,9 @@
+[package]
+name = "unicode-ident"
+version = "0.0.0"
+authors = ["David Tolnay <dtolnay@gmail.com>"]
+edition = "2021"
+publish = false
+
+[workspace]
+members = ["generate"]
