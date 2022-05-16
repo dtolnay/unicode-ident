@@ -1,3 +1,5 @@
+#![no_std]
+
 #[rustfmt::skip]
 mod tables;
 
