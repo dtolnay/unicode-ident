@@ -6,10 +6,16 @@ edition = "2021"
 publish = false
 
 [dev-dependencies]
+criterion = { version = "0.3", default-features = false }
 fst = "0.4"
+rand = { version = "0.8", features = ["small_rng"] }
 roaring = "0.9"
 ucd-trie = { version = "0.1", default-features = false }
 unicode-xid = "0.2"
+
+[[bench]]
+name = "xid"
+harness = false
 
 [workspace]
 members = ["diagram", "generate"]
