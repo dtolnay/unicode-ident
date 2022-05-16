@@ -246,7 +246,7 @@
 #[rustfmt::skip]
 mod tables;
 
-use tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
+use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
 pub fn is_xid_start(ch: char) -> bool {
     if ch.is_ascii() {

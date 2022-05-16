@@ -2,7 +2,8 @@
 name = "unicode-ident"
 version = "0.0.0"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-edition = "2021"
+edition = "2018"
+rust-version = "1.31"
 license = "MIT OR Apache-2.0"
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 repository = "https://github.com/dtolnay/unicode-ident"
