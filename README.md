@@ -137,6 +137,22 @@ caller is required to tokenize their UTF-8 encoded input data into `char`, hand
 the `char` into `ucd-trie`, only for `ucd-trie` to undo that work by converting
 back into the variable-length representation for trie traversal.
 
+#### fst
+
+Uses a [finite state transducer][fst]. This representation is built into
+[ucd-generate] but I am not aware of any advantage over the `ucd-trie`
+representation. In particular `ucd-trie` is optimized for storing Unicode
+properties while `fst` is not.
+
+[fst]: https://github.com/BurntSushi/fst
+[ucd-generate]: https://github.com/BurntSushi/ucd-generate
+
+As far as I can tell, the main thing that causes `fst` to have large size and
+slow lookups for this use case relative to `ucd-trie` is that it does not
+specialize for the fact that only 21 of the 32 bits in a `char` are meaningful.
+There are some dense arrays in the structure with large ranges that could never
+possibly be used.
+
 <br>
 
 ## License
