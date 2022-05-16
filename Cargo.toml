@@ -9,6 +9,7 @@ publish = false
 fst = "0.4"
 roaring = "0.9"
 ucd-trie = { version = "0.1", default-features = false }
+unicode-xid = "0.2"
 
 [workspace]
 members = ["diagram", "generate"]
