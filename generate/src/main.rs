@@ -17,6 +17,7 @@ mod output;
 use crate::output::Output;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap as Map, VecDeque};
+use std::convert::TryFrom;
 use std::fs;
 use std::path::Path;
 
