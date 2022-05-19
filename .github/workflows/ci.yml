@@ -9,6 +9,21 @@ env:
   RUSTFLAGS: -Dwarnings
 
 jobs:
+  unicode:
+    name: latest Unicode
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install ucd-generate
+      - run: curl -LO https://www.unicode.org/Public/zipped/latest/UCD.zip
+      - run: unzip UCD.zip -d UCD
+      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > generate/src/ucd.rs
+      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
+      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
+      - run: cargo run --manifest-path generate/Cargo.toml
+      - run: git diff --exit-code
+
   test:
     name: Rust ${{matrix.rust}}
     runs-on: ubuntu-latest
