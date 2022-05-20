@@ -1,20 +1,20 @@
-Unicode ident
+Unicode ID_start
 =============
 
-[<img alt="github" src="https://img.shields.io/badge/github-dtolnay/unicode--ident-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/dtolnay/unicode-ident)
-[<img alt="crates.io" src="https://img.shields.io/crates/v/unicode-ident.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/unicode-ident)
-[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-unicode--ident-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K" height="20">](https://docs.rs/unicode-ident)
-[<img alt="build status" src="https://img.shields.io/github/workflow/status/dtolnay/unicode-ident/CI/master?style=for-the-badge" height="20">](https://github.com/dtolnay/unicode-ident/actions?query=branch%3Amaster)
+[<img alt="github" src="https://img.shields.io/badge/github-Boshen/unicode--id--start-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/Boshen/unicode-id-start)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/unicode-id-start.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/unicode-id-start)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-unicode--ident-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K" height="20">](https://docs.rs/unicode-id-start)
+[<img alt="build status" src="https://img.shields.io/github/workflow/status/Boshen/unicode-id-start/CI/master?style=for-the-badge" height="20">](https://github.com/Boshen/unicode-id-start/actions?query=branch%3Amaster)
 
 Implementation of [Unicode Standard Annex #31][tr31] for determining which
 `char` values are valid in programming language identifiers.
 
 [tr31]: https://www.unicode.org/reports/tr31/
 
-This crate is a better optimized implementation of the older `unicode-xid`
+This crate is a better optimized implementation of the older `unicode-id`
 crate. This crate uses less static storage, and is able to classify both ASCII
 and non-ASCII codepoints with better performance, 2&ndash;10&times; faster than
-`unicode-xid`.
+`unicode-id`.
 
 <br>
 
@@ -23,8 +23,8 @@ and non-ASCII codepoints with better performance, 2&ndash;10&times; faster than
 The following table shows a comparison between five Unicode identifier
 implementations.
 
-- `unicode-ident` is this crate;
-- [`unicode-xid`] is a widely used crate run by the "unicode-rs" org;
+- `unicode-id-start` is this crate, which is a fork of [`unicode-ident`];
+- [`unicode-xid`] is a widely used crate run by the "unicode-rs" org, [`unicode-id`] is a fork of [`unicode-xid`];
 - `ucd-trie` and `fst` are two data structures supported by the [`ucd-generate`] tool;
 - [`roaring`] is a Rust implementation of Roaring bitmap.
 
@@ -32,19 +32,21 @@ The *static storage* column shows the total size of `static` tables that the
 crate bakes into your binary, measured in 1000s of bytes.
 
 The remaining columns show the **cost per call** to evaluate whether a single
-`char` has the XID\_Start or XID\_Continue Unicode property, comparing across
+`char` has the ID\_Start or ID\_Continue Unicode property, comparing across
 different ratios of ASCII to non-ASCII codepoints in the input data.
 
+[`unicode-ident`]: https://github.com/dtolnay/unicode-ident
 [`unicode-xid`]: https://github.com/unicode-rs/unicode-xid
+[`unicode-id`]: https://github.com/Boshen/unicode-id
 [`ucd-generate`]: https://github.com/BurntSushi/ucd-generate
 [`roaring`]: https://github.com/RoaringBitmap/roaring-rs
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-ident`** | 9.75 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
-| **`unicode-xid`** | 11.34 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
-| **`ucd-trie`** | 9.95 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
-| **`fst`** | 133 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
+| **`unicode-id-start`** | 9.68 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
+| **`unicode-id`** | 11.23 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
+| **`ucd-trie`** | 9.93 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
+| **`fst`** | 131 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
 | **`roaring`** | 66.1 K | 2.78 ns | 3.09 ns | 3.37 ns | 4.70 ns |
 
 Source code for the benchmark is provided in the *bench* directory of this repo

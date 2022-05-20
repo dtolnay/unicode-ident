@@ -13,18 +13,18 @@ fn test_size() {
         + size_of_val(&tables::TRIE_START)
         + size_of_val(&tables::TRIE_CONTINUE)
         + size_of_val(&tables::LEAF);
-    assert_eq!(9752, size);
+    assert_eq!(9688, size);
 }
 
 #[test]
-fn test_xid_size() {
+fn test_id_size() {
     #[deny(dead_code)]
     #[allow(clippy::redundant_static_lifetimes)]
     #[path = "../generate/src/ucd.rs"]
     mod ucd;
 
-    let size = size_of_val(ucd::XID_START) + size_of_val(ucd::XID_CONTINUE);
-    assert_eq!(11344, size);
+    let size = size_of_val(ucd::ID_START) + size_of_val(ucd::ID_CONTINUE);
+    assert_eq!(11232, size);
 
     let _ = ucd::BY_NAME;
 }
@@ -44,9 +44,9 @@ fn test_trieset_size() {
         tree3_level1,
         tree3_level2,
         tree3_level3,
-    } = *trie::XID_START;
+    } = *trie::ID_START;
 
-    let start_size = size_of_val(trie::XID_START)
+    let start_size = size_of_val(trie::ID_START)
         + size_of_val(tree1_level1)
         + size_of_val(tree2_level1)
         + size_of_val(tree2_level2)
@@ -61,9 +61,9 @@ fn test_trieset_size() {
         tree3_level1,
         tree3_level2,
         tree3_level3,
-    } = *trie::XID_CONTINUE;
+    } = *trie::ID_CONTINUE;
 
-    let continue_size = size_of_val(trie::XID_CONTINUE)
+    let continue_size = size_of_val(trie::ID_CONTINUE)
         + size_of_val(tree1_level1)
         + size_of_val(tree2_level1)
         + size_of_val(tree2_level2)
@@ -71,17 +71,17 @@ fn test_trieset_size() {
         + size_of_val(tree3_level2)
         + size_of_val(tree3_level3);
 
-    assert_eq!(9952, start_size + continue_size);
+    assert_eq!(9936, start_size + continue_size);
 
     let _ = trie::BY_NAME;
 }
 
 #[test]
 fn test_fst_size() {
-    let xid_start_fst = include_bytes!("fst/xid_start.fst");
-    let xid_continue_fst = include_bytes!("fst/xid_continue.fst");
-    let size = xid_start_fst.len() + xid_continue_fst.len();
-    assert_eq!(132897, size);
+    let id_start_fst = include_bytes!("fst/id_start.fst");
+    let id_continue_fst = include_bytes!("fst/id_continue.fst");
+    let size = id_start_fst.len() + id_continue_fst.len();
+    assert_eq!(131439, size);
 }
 
 #[test]
@@ -89,8 +89,8 @@ fn test_roaring_size() {
     #[path = "roaring/mod.rs"]
     mod roaring;
 
-    let xid_start_bitmap = roaring::xid_start_bitmap();
-    let xid_continue_bitmap = roaring::xid_continue_bitmap();
-    let size = xid_start_bitmap.serialized_size() + xid_continue_bitmap.serialized_size();
+    let id_start_bitmap = roaring::id_start_bitmap();
+    let id_continue_bitmap = roaring::id_continue_bitmap();
+    let size = id_start_bitmap.serialized_size() + id_continue_bitmap.serialized_size();
     assert_eq!(66104, size);
 }

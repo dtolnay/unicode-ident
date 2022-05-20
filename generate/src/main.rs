@@ -3,9 +3,9 @@
 // $ cargo install ucd-generate
 // $ curl -LO https://www.unicode.org/Public/zipped/14.0.0/UCD.zip
 // $ unzip UCD.zip -d UCD
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue > generate/src/ucd.rs
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue > generate/src/ucd.rs
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --fst-dir tests/fst
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --trie-set > tests/trie/trie.rs
 // $ cargo run --manifest-path generate/Cargo.toml
 
 #[rustfmt::skip]
@@ -24,12 +24,12 @@ use std::path::Path;
 const CHUNK: usize = 64;
 const PATH: &str = "../src/tables.rs";
 
-fn is_xid_start(ch: char) -> bool {
-    search(ch, ucd::XID_START)
+fn is_id_start(ch: char) -> bool {
+    search(ch, ucd::ID_START)
 }
 
-fn is_xid_continue(ch: char) -> bool {
-    search(ch, ucd::XID_CONTINUE)
+fn is_id_continue(ch: char) -> bool {
+    search(ch, ucd::ID_CONTINUE)
 }
 
 fn search(ch: char, table: &[(u32, u32)]) -> bool {
@@ -75,8 +75,8 @@ fn main() {
                 let code = (i * CHUNK as u32 + j) * 8 + k;
                 if code >= 0x80 {
                     if let Some(ch) = char::from_u32(code) {
-                        *this_start |= (is_xid_start(ch) as u8) << k;
-                        *this_continue |= (is_xid_continue(ch) as u8) << k;
+                        *this_start |= (is_id_start(ch) as u8) << k;
+                        *this_continue |= (is_id_continue(ch) as u8) << k;
                     }
                 }
             }
@@ -167,7 +167,7 @@ fn main() {
         write!(out, "   ");
         for j in 0..32 {
             let ch = (i * 32 + j) as char;
-            write!(out, " {},", if is_xid_start(ch) { 'T' } else { 'F' });
+            write!(out, " {},", if is_id_start(ch) { 'T' } else { 'F' });
         }
         writeln!(out);
     }
@@ -182,7 +182,7 @@ fn main() {
         write!(out, "   ");
         for j in 0..32 {
             let ch = (i * 32 + j) as char;
-            write!(out, " {},", if is_xid_continue(ch) { 'T' } else { 'F' });
+            write!(out, " {},", if is_id_continue(ch) { 'T' } else { 'F' });
         }
         writeln!(out);
     }

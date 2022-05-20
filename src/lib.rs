@@ -1,4 +1,4 @@
-//! [![github]](https://github.com/dtolnay/unicode-ident)&ensp;[![crates-io]](https://crates.io/crates/unicode-ident)&ensp;[![docs-rs]](https://docs.rs/unicode-ident)
+//! [![github]](https://github.com/Boshen/unicode-id-start)&ensp;[![crates-io]](https://crates.io/crates/unicode-id-start)&ensp;[![docs-rs]](https://docs.rs/unicode-id-start)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
@@ -23,8 +23,8 @@
 //! The following table shows a comparison between five Unicode identifier
 //! implementations.
 //!
-//! - `unicode-ident` is this crate;
-//! - [`unicode-xid`] is a widely used crate run by the "unicode-rs" org;
+//! - `unicode-id-start` is this crate, which is a fork of `unicode-ident`;
+//! - [`unicode-xid`] is a widely used crate run by the "unicode-rs" org; [`unicode-id`] is a fork of `unicode-xid`;
 //! - `ucd-trie` and `fst` are two data structures supported by the
 //!   [`ucd-generate`] tool;
 //! - [`roaring`] is a Rust implementation of Roaring bitmap.
@@ -37,16 +37,19 @@
 //! comparing across different ratios of ASCII to non-ASCII codepoints in the
 //! input data.
 //!
+//! [`unicode-ident`]: https://github.com/dtolnay/unicode-ident
 //! [`unicode-xid`]: https://github.com/unicode-rs/unicode-xid
+//! [`unicode-id`]: https://github.com/Boshen/unicode-id
 //! [`ucd-generate`]: https://github.com/BurntSushi/ucd-generate
 //! [`roaring`]: https://github.com/RoaringBitmap/roaring-rs
 //!
 //! | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 //! |---|---|---|---|---|---|
-//! | **`unicode-ident`** | 9.75 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
-//! | **`unicode-xid`** | 11.34 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
-//! | **`ucd-trie`** | 9.95 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
-//! | **`fst`** | 133 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
+//! | **`unicode-id-start`** | 9.68 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
+//! | **`unicode-id`** | 11.23 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
+//! | **`ucd-trie`** | 9.93 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
+//! | **`fst`** | 131 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
+//! | **`roaring`** | 66.1 K | 2.78 ns | 3.09 ns | 3.37 ns | 4.70 ns |
 //! | **`roaring`** | 66.1 K | 2.78 ns | 3.09 ns | 3.37 ns | 4.70 ns |
 //!
 //! Source code for the benchmark is provided in the *bench* directory of this
@@ -249,7 +252,7 @@ mod tables;
 
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
-pub fn is_xid_start(ch: char) -> bool {
+pub fn is_id_start(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_START.0[ch as usize];
     }
@@ -258,7 +261,7 @@ pub fn is_xid_start(ch: char) -> bool {
     unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
-pub fn is_xid_continue(ch: char) -> bool {
+pub fn is_id_continue(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_CONTINUE.0[ch as usize];
     }

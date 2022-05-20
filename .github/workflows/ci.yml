@@ -18,9 +18,9 @@ jobs:
       - run: cargo install ucd-generate
       - run: curl -LO https://www.unicode.org/Public/zipped/latest/UCD.zip
       - run: unzip UCD.zip -d UCD
-      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > generate/src/ucd.rs
-      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
-      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
+      - run: ucd-generate property-bool UCD --include ID_Start,ID_Continue > generate/src/ucd.rs
+      - run: ucd-generate property-bool UCD --include ID_Start,ID_Continue --fst-dir tests/fst
+      - run: ucd-generate property-bool UCD --include ID_Start,ID_Continue --trie-set > tests/trie/trie.rs
       - run: cargo run --manifest-path generate/Cargo.toml
       - run: git diff --exit-code
 

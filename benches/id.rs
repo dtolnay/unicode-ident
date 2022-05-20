@@ -56,48 +56,48 @@ fn bench(c: &mut Criterion, group_name: &str, string: String) {
             }
         });
     });
-    group.bench_function("unicode-ident", |b| {
+    group.bench_function("unicode-id-start", |b| {
         b.iter(|| {
             for ch in string.chars() {
-                black_box(unicode_ident::is_xid_start(ch));
-                black_box(unicode_ident::is_xid_continue(ch));
+                black_box(unicode_id_start::is_id_start(ch));
+                black_box(unicode_id_start::is_id_continue(ch));
             }
         });
     });
-    group.bench_function("unicode-xid", |b| {
+    group.bench_function("unicode-id", |b| {
         b.iter(|| {
             for ch in string.chars() {
-                black_box(unicode_xid::UnicodeXID::is_xid_start(ch));
-                black_box(unicode_xid::UnicodeXID::is_xid_continue(ch));
+                black_box(unicode_id::UnicodeID::is_id_start(ch));
+                black_box(unicode_id::UnicodeID::is_id_continue(ch));
             }
         });
     });
     group.bench_function("ucd-trie", |b| {
         b.iter(|| {
             for ch in string.chars() {
-                black_box(trie::XID_START.contains_char(ch));
-                black_box(trie::XID_CONTINUE.contains_char(ch));
+                black_box(trie::ID_START.contains_char(ch));
+                black_box(trie::ID_CONTINUE.contains_char(ch));
             }
         });
     });
     group.bench_function("fst", |b| {
-        let xid_start_fst = fst::xid_start_fst();
-        let xid_continue_fst = fst::xid_continue_fst();
+        let id_start_fst = fst::id_start_fst();
+        let id_continue_fst = fst::id_continue_fst();
         b.iter(|| {
             for ch in string.chars() {
                 let ch_bytes = (ch as u32).to_be_bytes();
-                black_box(xid_start_fst.contains(ch_bytes));
-                black_box(xid_continue_fst.contains(ch_bytes));
+                black_box(id_start_fst.contains(ch_bytes));
+                black_box(id_continue_fst.contains(ch_bytes));
             }
         });
     });
     group.bench_function("roaring", |b| {
-        let xid_start_bitmap = roaring::xid_start_bitmap();
-        let xid_continue_bitmap = roaring::xid_continue_bitmap();
+        let id_start_bitmap = roaring::id_start_bitmap();
+        let id_continue_bitmap = roaring::id_continue_bitmap();
         b.iter(|| {
             for ch in string.chars() {
-                black_box(xid_start_bitmap.contains(ch as u32));
-                black_box(xid_continue_bitmap.contains(ch as u32));
+                black_box(id_start_bitmap.contains(ch as u32));
+                black_box(id_continue_bitmap.contains(ch as u32));
             }
         });
     });
