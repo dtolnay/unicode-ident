@@ -9,6 +9,7 @@ description = "Determine whether characters have the XID_Start or XID_Continue p
 repository = "https://github.com/dtolnay/unicode-ident"
 documentation = "https://docs.rs/unicode-ident"
 readme = "README.md"
+exclude = ["/tests/", "/benches/", "/.github/", ".gitignore"]
 
 [dev-dependencies]
 criterion = { version = "0.3", default-features = false }
