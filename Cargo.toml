@@ -2,6 +2,7 @@
 name = "unicode-ident"
 version = "1.0.2"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+categories = ["development-tools::procedural-macro-helpers", "no-std"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-ident"
 edition = "2018"
