@@ -6,6 +6,7 @@ categories = ["development-tools::procedural-macro-helpers", "no-std"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-ident"
 edition = "2018"
+keywords = ["unicode"]
 license = "(MIT OR Apache-2.0) AND Unicode-DFS-2016"
 readme = "README.md"
 repository = "https://github.com/dtolnay/unicode-ident"
