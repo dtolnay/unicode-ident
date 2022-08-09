@@ -281,3 +281,7 @@ generated files are involved.
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
 be licensed as just described, without any additional terms or conditions.
+
+### What this means for users
+
+If you are using unicode-ident as a dependency of your project and your project is licensed under the Apache license, MIT license or other permissive licenses, then you can freely use unicode-ident in your project and do not need to include any additional copyright notices in your project.
