@@ -6,5 +6,5 @@ edition = "2018"
 publish = false
 
 [dependencies]
-image = "0.24"
+image = "0.24.3"
 unicode-id-start = { path = ".." }
