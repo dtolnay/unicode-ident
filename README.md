@@ -43,10 +43,10 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-id-start`** | 9.68 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
-| **`unicode-id`** | 11.23 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
-| **`ucd-trie`** | 9.93 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
-| **`fst`** | 131 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
+| **`unicode-id-start`** | 10 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
+| **`unicode-id`** | 11.41 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
+| **`ucd-trie`** | 10.19 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
+| **`fst`** | 136 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
 | **`roaring`** | 66.1 K | 2.78 ns | 3.09 ns | 3.37 ns | 4.70 ns |
 
 Source code for the benchmark is provided in the *bench* directory of this repo
