@@ -8,7 +8,6 @@ documentation = "https://docs.rs/unicode-ident"
 edition = "2018"
 keywords = ["unicode"]
 license = "(MIT OR Apache-2.0) AND Unicode-DFS-2016"
-readme = "README.md"
 repository = "https://github.com/dtolnay/unicode-ident"
 rust-version = "1.31"
 
