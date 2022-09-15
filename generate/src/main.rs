@@ -54,7 +54,10 @@ fn main() {
             *prev
         } else {
             dense.push(chunk);
-            let new = u8::try_from(chunkmap.len()).unwrap();
+            let new = match u8::try_from(chunkmap.len()) {
+                Ok(byte) => byte,
+                Err(_) => panic!("exceeded 256 unique chunks"),
+            };
             chunkmap.insert(chunk, new);
             new
         }
@@ -117,7 +120,10 @@ fn main() {
         back.copy_from_slice(&chunk[CHUNK / 2..]);
         dense_to_halfdense.insert(
             original_pos,
-            u8::try_from(halfdense.len() / (CHUNK / 2)).unwrap(),
+            match u8::try_from(halfdense.len() / (CHUNK / 2)) {
+                Ok(byte) => byte,
+                Err(_) => panic!("exceeded 256 half-chunks"),
+            },
         );
         halfdense.extend_from_slice(&front);
         halfdense.extend_from_slice(&back);
@@ -134,7 +140,10 @@ fn main() {
             }
             dense_to_halfdense.insert(
                 original_pos,
-                u8::try_from(halfdense.len() / (CHUNK / 2) - 1).unwrap(),
+                match u8::try_from(halfdense.len() / (CHUNK / 2) - 1) {
+                    Ok(byte) => byte,
+                    Err(_) => panic!("exceeded 256 half-chunks"),
+                },
             );
             halfdense.extend_from_slice(&next);
             back = next;
