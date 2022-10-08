@@ -13,12 +13,11 @@
     clippy::cast_possible_truncation,
     clippy::match_wild_err_arm,
     clippy::too_many_lines,
-    clippy::uninlined_format_args,
-    clippy::unreadable_literal
+    clippy::uninlined_format_args
 )]
 
 #[rustfmt::skip]
-#[allow(dead_code, clippy::all)]
+#[allow(dead_code, clippy::all, clippy::pedantic)]
 mod ucd;
 
 mod output;
