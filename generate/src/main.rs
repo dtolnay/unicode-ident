@@ -12,7 +12,6 @@
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::match_wild_err_arm,
-    clippy::redundant_closure_for_method_calls,
     clippy::too_many_lines,
     clippy::uninlined_format_args,
     clippy::unreadable_literal
@@ -137,10 +136,7 @@ fn main() {
         );
         halfdense.extend_from_slice(&front);
         halfdense.extend_from_slice(&back);
-        while let Some(next) = halfchunkmap
-            .get_mut(&back)
-            .and_then(|deque| deque.pop_front())
-        {
+        while let Some(next) = halfchunkmap.get_mut(&back).and_then(VecDeque::pop_front) {
             let mut concat = empty_chunk;
             concat[..CHUNK / 2].copy_from_slice(&back);
             concat[CHUNK / 2..].copy_from_slice(&next);
