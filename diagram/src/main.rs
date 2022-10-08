@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity, clippy::uninlined_format_args)]
+
 use image::{ImageBuffer, Rgb};
 use std::process;
 

@@ -8,8 +8,18 @@
 // $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
 // $ cargo run --manifest-path generate/Cargo.toml
 
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::match_wild_err_arm,
+    clippy::redundant_closure_for_method_calls,
+    clippy::too_many_lines,
+    clippy::uninlined_format_args,
+    clippy::unreadable_literal
+)]
+
 #[rustfmt::skip]
-#[allow(dead_code)]
+#[allow(dead_code, clippy::all)]
 mod ucd;
 
 mod output;
