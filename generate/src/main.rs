@@ -10,7 +10,7 @@
 
 #![allow(
     clippy::cast_lossless,
-    clippy::cast_possible_truncation,
+    clippy::cast_possible_truncation, // https://github.com/rust-lang/rust-clippy/issues/9613
     clippy::match_wild_err_arm,
     clippy::too_many_lines,
     clippy::uninlined_format_args
