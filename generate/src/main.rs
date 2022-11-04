@@ -11,6 +11,7 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation, // https://github.com/rust-lang/rust-clippy/issues/9613
+    clippy::let_underscore_drop,
     clippy::match_wild_err_arm,
     clippy::module_name_repetitions,
     clippy::too_many_lines,
@@ -22,7 +23,6 @@ mod parse;
 mod write;
 
 use crate::parse::parse_xid_properties;
-use anyhow::Result;
 use std::collections::{BTreeMap as Map, VecDeque};
 use std::convert::TryFrom;
 use std::fs;
@@ -34,20 +34,11 @@ const CHUNK: usize = 64;
 const UCD: &str = "UCD";
 const TABLES: &str = "src/tables.rs";
 
-fn main() -> Result<()> {
+fn main() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let unicode_ident_dir = manifest_dir.parent().unwrap();
     let ucd_dir = unicode_ident_dir.join(UCD);
-    if !ucd_dir.exists() {
-        writeln!(
-            io::stderr(),
-            "Not found: {}\nDownload from https://www.unicode.org/Public/zipped/l5.0.0/UCD.zip and unzip.",
-            ucd_dir.display(),
-        )?;
-        process::exit(1);
-    }
-
-    let properties = parse_xid_properties(&ucd_dir)?;
+    let properties = parse_xid_properties(&ucd_dir);
 
     let mut chunkmap = Map::<[u8; CHUNK], u8>::new();
     let mut dense = Vec::<[u8; CHUNK]>::new();
@@ -158,6 +149,8 @@ fn main() -> Result<()> {
 
     let out = write::output(&properties, &index_start, &index_continue, &halfdense);
     let path = unicode_ident_dir.join(TABLES);
-    fs::write(path, out)?;
-    Ok(())
+    if let Err(err) = fs::write(&path, out) {
+        let _ = writeln!(io::stderr(), "{}: {err}", path.display());
+        process::exit(1);
+    }
 }

@@ -1,7 +1,8 @@
-use anyhow::{bail, Result};
 use std::collections::BTreeSet as Set;
 use std::fs;
+use std::io::{self, Write};
 use std::path::Path;
+use std::process;
 
 pub struct Properties {
     xid_start: Set<u32>,
@@ -18,7 +19,7 @@ impl Properties {
     }
 }
 
-pub fn parse_xid_properties(ucd_dir: &Path) -> Result<Properties> {
+pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
     let mut properties = Properties {
         xid_start: Set::new(),
         xid_continue: Set::new(),
@@ -26,15 +27,21 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Result<Properties> {
 
     let filename = "DerivedCoreProperties.txt";
     let path = ucd_dir.join(filename);
-    let contents = fs::read_to_string(path)?;
+    let contents = fs::read_to_string(path).unwrap_or_else(|err| {
+        let suggestion =
+            "Download from https://www.unicode.org/Public/zipped/l5.0.0/UCD.zip and unzip.";
+        let _ = writeln!(io::stderr(), "{}: {err}\n{suggestion}", ucd_dir.display());
+        process::exit(1);
+    });
+
     for (i, line) in contents.lines().enumerate() {
         if line.starts_with('#') || line.trim().is_empty() {
             continue;
         }
-        let (lo, hi, name) = match parse_line(line) {
-            Some(line) => line,
-            None => bail!("{} line {} is unexpected:\n{}", filename, i, line),
-        };
+        let (lo, hi, name) = parse_line(line).unwrap_or_else(|| {
+            let _ = writeln!(io::stderr(), "{filename} line {i} is unexpected:\n{line}");
+            process::exit(1);
+        });
         let set = match name {
             "XID_Start" => &mut properties.xid_start,
             "XID_Continue" => &mut properties.xid_continue,
@@ -43,7 +50,7 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Result<Properties> {
         set.extend(lo..=hi);
     }
 
-    Ok(properties)
+    properties
 }
 
 fn parse_line(line: &str) -> Option<(u32, u32, &str)> {
