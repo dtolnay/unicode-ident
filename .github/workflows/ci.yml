@@ -20,15 +20,15 @@ jobs:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - id: ucd-generate
-        run: echo "version=$(grep 'ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+' generate/src/ucd.rs --only-matching)" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep 'ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+' tests/tables/tables.rs --only-matching)" >> $GITHUB_OUTPUT
       - run: cargo install ucd-generate
       - run: curl -LO https://www.unicode.org/Public/zipped/latest/UCD.zip
       - run: unzip UCD.zip -d UCD
-      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > generate/src/ucd.rs
+      - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/tables/tables.rs
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
       - run: cargo run --manifest-path generate/Cargo.toml
-      - run: sed --in-place 's/ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+/${{steps.ucd-generate.outputs.version}}/' generate/src/ucd.rs tests/trie/trie.rs
+      - run: sed --in-place 's/ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+/${{steps.ucd-generate.outputs.version}}/' tests/tables/tables.rs tests/trie/trie.rs
       - run: git diff --exit-code
 
   test:
