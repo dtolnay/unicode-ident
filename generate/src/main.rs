@@ -27,6 +27,7 @@ use std::cmp::Ordering;
 use std::collections::{BTreeMap as Map, VecDeque};
 use std::convert::TryFrom;
 use std::fs;
+use std::io;
 use std::path::Path;
 
 const CHUNK: usize = 64;
@@ -54,7 +55,7 @@ fn search(ch: char, table: &[(u32, u32)]) -> bool {
         .is_ok()
 }
 
-fn main() {
+fn main() -> io::Result<()> {
     let mut chunkmap = Map::<[u8; CHUNK], u8>::new();
     let mut dense = Vec::<[u8; CHUNK]>::new();
     let mut new_chunk = |chunk| {
@@ -164,5 +165,5 @@ fn main() {
 
     let out = write::output(&index_start, &index_continue, &halfdense);
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(PATH);
-    fs::write(path, out).unwrap();
+    fs::write(path, out)
 }
