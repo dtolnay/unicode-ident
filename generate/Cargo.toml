@@ -7,4 +7,3 @@ publish = false
 
 [dependencies]
 anyhow = "1"
-ucd-parse = "0.1.10"

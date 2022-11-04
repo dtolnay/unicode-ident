@@ -1,7 +1,7 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use std::collections::BTreeSet as Set;
+use std::fs;
 use std::path::Path;
-use ucd_parse::CoreProperty;
 
 pub struct Properties {
     xid_start: Set<u32>,
@@ -24,17 +24,45 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Result<Properties> {
         xid_continue: Set::new(),
     };
 
-    let prop_list: Vec<CoreProperty> = ucd_parse::parse(ucd_dir)?;
-    for core in prop_list {
-        let set = match core.property.as_str() {
+    let filename = "DerivedCoreProperties.txt";
+    let path = ucd_dir.join(filename);
+    let contents = fs::read_to_string(path)?;
+    for (i, line) in contents.lines().enumerate() {
+        if line.starts_with('#') || line.trim().is_empty() {
+            continue;
+        }
+        let (lo, hi, name) = match parse_line(line) {
+            Some(line) => line,
+            None => bail!("{} line {} is unexpected:\n{}", filename, i, line),
+        };
+        let set = match name {
             "XID_Start" => &mut properties.xid_start,
             "XID_Continue" => &mut properties.xid_continue,
             _ => continue,
         };
-        for codepoint in core.codepoints {
-            set.insert(codepoint.value());
-        }
+        set.extend(lo..=hi);
     }
 
     Ok(properties)
+}
+
+fn parse_line(line: &str) -> Option<(u32, u32, &str)> {
+    let (mut codepoint, rest) = line.split_once(';')?;
+
+    let (lo, hi);
+    codepoint = codepoint.trim();
+    if let Some((a, b)) = codepoint.split_once("..") {
+        lo = parse_codepoint(a)?;
+        hi = parse_codepoint(b)?;
+    } else {
+        lo = parse_codepoint(codepoint)?;
+        hi = lo;
+    }
+
+    let name = rest.trim().split('#').next()?.trim_end();
+    Some((lo, hi, name))
+}
+
+fn parse_codepoint(s: &str) -> Option<u32> {
+    u32::from_str_radix(s, 16).ok()
 }
