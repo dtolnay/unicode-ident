@@ -11,7 +11,6 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation, // https://github.com/rust-lang/rust-clippy/issues/9613
-    clippy::let_underscore_drop,
     clippy::match_wild_err_arm,
     clippy::module_name_repetitions,
     clippy::too_many_lines,
