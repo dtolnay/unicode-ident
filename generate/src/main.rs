@@ -47,9 +47,8 @@ fn main() {
             *prev
         } else {
             dense.push(chunk);
-            let new = match u8::try_from(chunkmap.len()) {
-                Ok(byte) => byte,
-                Err(_) => panic!("exceeded 256 unique chunks"),
+            let Ok(new) = u8::try_from(chunkmap.len()) else {
+                panic!("exceeded 256 unique chunks");
             };
             chunkmap.insert(chunk, new);
             new
