@@ -1,6 +1,6 @@
 [package]
 name = "unicode-ident"
-version = "1.0.5"
+version = "1.0.6"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "no-std"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
