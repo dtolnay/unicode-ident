@@ -26,5 +26,8 @@ harness = false
 [workspace]
 members = ["diagram", "generate"]
 
+[lib]
+doc-scrape-examples = false
+
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
