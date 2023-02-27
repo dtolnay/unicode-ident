@@ -148,7 +148,7 @@ fn main() {
     let out = write::output(&properties, &index_start, &index_continue, &halfdense);
     let path = unicode_ident_dir.join(TABLES);
     if let Err(err) = fs::write(&path, out) {
-        _ = writeln!(io::stderr(), "{}: {err}", path.display());
+        let _ = writeln!(io::stderr(), "{}: {err}", path.display());
         process::exit(1);
     }
 }

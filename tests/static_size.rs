@@ -25,7 +25,7 @@ fn test_xid_size() {
     let size = size_of_val(tables::XID_START) + size_of_val(tables::XID_CONTINUE);
     assert_eq!(11528, size);
 
-    _ = tables::BY_NAME;
+    let _ = tables::BY_NAME;
 }
 
 #[cfg(target_pointer_width = "64")]
@@ -72,7 +72,7 @@ fn test_trieset_size() {
 
     assert_eq!(10208, start_size + continue_size);
 
-    _ = trie::BY_NAME;
+    let _ = trie::BY_NAME;
 }
 
 #[test]
