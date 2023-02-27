@@ -30,7 +30,7 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
     let contents = fs::read_to_string(path).unwrap_or_else(|err| {
         let suggestion =
             "Download from https://www.unicode.org/Public/zipped/l5.0.0/UCD.zip and unzip.";
-        let _ = writeln!(io::stderr(), "{}: {err}\n{suggestion}", ucd_dir.display());
+        _ = writeln!(io::stderr(), "{}: {err}\n{suggestion}", ucd_dir.display());
         process::exit(1);
     });
 
@@ -39,7 +39,7 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
             continue;
         }
         let (lo, hi, name) = parse_line(line).unwrap_or_else(|| {
-            let _ = writeln!(io::stderr(), "{filename} line {i} is unexpected:\n{line}");
+            _ = writeln!(io::stderr(), "{filename} line {i} is unexpected:\n{line}");
             process::exit(1);
         });
         let set = match name {
