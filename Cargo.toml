@@ -1,6 +1,6 @@
 [package]
 name = "unicode-id-start"
-version = "1.0.8"
+version = "1.1.0"
 authors = ["David Tolnay <dtolnay@gmail.com>", "Boshen <boshenc@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "no-std"]
 description = "Determine whether characters have the ID_Start or ID_Continue properties according to Unicode Standard Annex #31"
