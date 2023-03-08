@@ -1,10 +1,10 @@
 Unicode ID_start
 =============
 
-[<img alt="github" src="https://img.shields.io/badge/github-Boshen/unicode--id--start-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/Boshen/unicode-id-start)
-[<img alt="crates.io" src="https://img.shields.io/crates/v/unicode-id-start.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/unicode-id-start)
-[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-unicode--ident-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K" height="20">](https://docs.rs/unicode-id-start)
-[<img alt="build status" src="https://img.shields.io/github/workflow/status/Boshen/unicode-id-start/CI/master?style=for-the-badge" height="20">](https://github.com/Boshen/unicode-id-start/actions?query=branch%3Amaster)
+[<img alt="github" src="https://img.shields.io/badge/github-dtolnay/unicode--ident-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/dtolnay/unicode-ident)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/unicode-ident.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/unicode-ident)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-unicode--ident-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/unicode-ident)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/dtolnay/unicode-ident/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/dtolnay/unicode-ident/actions?query=branch%3Amaster)
 
 Implementation of [Unicode Standard Annex #31][tr31] for determining which
 `char` values are valid in programming language identifiers.
@@ -43,10 +43,10 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-id-start`** | 10 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
-| **`unicode-id`** | 11.41 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
-| **`ucd-trie`** | 10.19 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
-| **`fst`** | 136 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
+| **`unicode-ident`** | 10.0 K | 0.96 ns | 0.95 ns | 1.09 ns | 1.55 ns |
+| **`unicode-xid`** | 11.5 K | 1.88 ns | 2.14 ns | 3.48 ns | 15.63 ns |
+| **`ucd-trie`** | 10.2 K | 1.29 ns | 1.28 ns | 1.36 ns | 2.15 ns |
+| **`fst`** | 138 K | 55.1 ns | 54.9 ns | 53.2 ns | 28.5 ns |
 | **`roaring`** | 66.1 K | 2.78 ns | 3.09 ns | 3.37 ns | 4.70 ns |
 
 Source code for the benchmark is provided in the *bench* directory of this repo

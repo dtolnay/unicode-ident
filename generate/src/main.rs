@@ -1,52 +1,45 @@
 // To regenerate tables, run the following in the repo root:
 //
 // $ cargo install ucd-generate
-// $ curl -LO https://www.unicode.org/Public/zipped/14.0.0/UCD.zip
+// $ curl -LO https://www.unicode.org/Public/zipped/15.0.0/UCD.zip
 // $ unzip UCD.zip -d UCD
-// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue > generate/src/ucd.rs
-// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --fst-dir tests/fst
-// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --trie-set > tests/trie/trie.rs
+// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/table/tables.rs
+// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
+// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
 // $ cargo run --manifest-path generate/Cargo.toml
 
-#[rustfmt::skip]
-#[allow(dead_code)]
-mod ucd;
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation, // https://github.com/rust-lang/rust-clippy/issues/9613
+    clippy::let_underscore_untyped,
+    clippy::match_wild_err_arm,
+    clippy::module_name_repetitions,
+    clippy::too_many_lines,
+    clippy::uninlined_format_args
+)]
 
 mod output;
+mod parse;
+mod write;
 
-use crate::output::Output;
-use std::cmp::Ordering;
+use crate::parse::parse_xid_properties;
 use std::collections::{BTreeMap as Map, VecDeque};
 use std::convert::TryFrom;
 use std::fs;
+use std::io::{self, Write};
 use std::path::Path;
+use std::process;
 
 const CHUNK: usize = 64;
-const PATH: &str = "../src/tables.rs";
-
-fn is_id_start(ch: char) -> bool {
-    search(ch, ucd::ID_START)
-}
-
-fn is_id_continue(ch: char) -> bool {
-    search(ch, ucd::ID_CONTINUE)
-}
-
-fn search(ch: char, table: &[(u32, u32)]) -> bool {
-    table
-        .binary_search_by(|&(lo, hi)| {
-            if lo > ch as u32 {
-                Ordering::Greater
-            } else if hi < ch as u32 {
-                Ordering::Less
-            } else {
-                Ordering::Equal
-            }
-        })
-        .is_ok()
-}
+const UCD: &str = "UCD";
+const TABLES: &str = "src/tables.rs";
 
 fn main() {
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let unicode_ident_dir = manifest_dir.parent().unwrap();
+    let ucd_dir = unicode_ident_dir.join(UCD);
+    let properties = parse_xid_properties(&ucd_dir);
+
     let mut chunkmap = Map::<[u8; CHUNK], u8>::new();
     let mut dense = Vec::<[u8; CHUNK]>::new();
     let mut new_chunk = |chunk| {
@@ -54,7 +47,9 @@ fn main() {
             *prev
         } else {
             dense.push(chunk);
-            let new = u8::try_from(chunkmap.len()).unwrap();
+            let Ok(new) = u8::try_from(chunkmap.len()) else {
+                panic!("exceeded 256 unique chunks");
+            };
             chunkmap.insert(chunk, new);
             new
         }
@@ -75,8 +70,8 @@ fn main() {
                 let code = (i * CHUNK as u32 + j) * 8 + k;
                 if code >= 0x80 {
                     if let Some(ch) = char::from_u32(code) {
-                        *this_start |= (is_id_start(ch) as u8) << k;
-                        *this_continue |= (is_id_continue(ch) as u8) << k;
+                        *this_start |= (properties.is_xid_start(ch) as u8) << k;
+                        *this_continue |= (properties.is_xid_continue(ch) as u8) << k;
                     }
                 }
             }
@@ -117,14 +112,14 @@ fn main() {
         back.copy_from_slice(&chunk[CHUNK / 2..]);
         dense_to_halfdense.insert(
             original_pos,
-            u8::try_from(halfdense.len() / (CHUNK / 2)).unwrap(),
+            match u8::try_from(halfdense.len() / (CHUNK / 2)) {
+                Ok(byte) => byte,
+                Err(_) => panic!("exceeded 256 half-chunks"),
+            },
         );
         halfdense.extend_from_slice(&front);
         halfdense.extend_from_slice(&back);
-        while let Some(next) = halfchunkmap
-            .get_mut(&back)
-            .and_then(|deque| deque.pop_front())
-        {
+        while let Some(next) = halfchunkmap.get_mut(&back).and_then(VecDeque::pop_front) {
             let mut concat = empty_chunk;
             concat[..CHUNK / 2].copy_from_slice(&back);
             concat[CHUNK / 2..].copy_from_slice(&next);
@@ -134,7 +129,10 @@ fn main() {
             }
             dense_to_halfdense.insert(
                 original_pos,
-                u8::try_from(halfdense.len() / (CHUNK / 2) - 1).unwrap(),
+                match u8::try_from(halfdense.len() / (CHUNK / 2) - 1) {
+                    Ok(byte) => byte,
+                    Err(_) => panic!("exceeded 256 half-chunks"),
+                },
             );
             halfdense.extend_from_slice(&next);
             back = next;
@@ -148,107 +146,10 @@ fn main() {
         *index = dense_to_halfdense[index];
     }
 
-    let mut out = Output::new();
-    writeln!(
-        out,
-        "// \x40generated by ../generate. To regenerate, run the following in the repo root:",
-    );
-    writeln!(out, "//");
-    writeln!(
-        out,
-        "// $ curl -LO https://www.unicode.org/Public/zipped/14.0.0/UCD.zip",
-    );
-    writeln!(out, "// $ unzip UCD.zip -d UCD");
-    writeln!(out, "// $ cargo run --manifest-path generate/Cargo.toml");
-    writeln!(out);
-
-    writeln!(out, "const T: bool = true;");
-    writeln!(out, "const F: bool = false;");
-    writeln!(out);
-
-    writeln!(out, "#[repr(C, align(8))]");
-    writeln!(out, "pub(crate) struct Align8<T>(pub(crate) T);");
-    writeln!(out, "#[repr(C, align(64))]");
-    writeln!(out, "pub(crate) struct Align64<T>(pub(crate) T);");
-    writeln!(out);
-
-    writeln!(
-        out,
-        "pub(crate) static ASCII_START: Align64<[bool; 128]> = Align64([",
-    );
-    for i in 0u8..4 {
-        write!(out, "   ");
-        for j in 0..32 {
-            let ch = (i * 32 + j) as char;
-            write!(out, " {},", if is_id_start(ch) { 'T' } else { 'F' });
-        }
-        writeln!(out);
+    let out = write::output(&properties, &index_start, &index_continue, &halfdense);
+    let path = unicode_ident_dir.join(TABLES);
+    if let Err(err) = fs::write(&path, out) {
+        let _ = writeln!(io::stderr(), "{}: {err}", path.display());
+        process::exit(1);
     }
-    writeln!(out, "]);");
-    writeln!(out);
-
-    writeln!(
-        out,
-        "pub(crate) static ASCII_CONTINUE: Align64<[bool; 128]> = Align64([",
-    );
-    for i in 0u8..4 {
-        write!(out, "   ");
-        for j in 0..32 {
-            let ch = (i * 32 + j) as char;
-            write!(out, " {},", if is_id_continue(ch) { 'T' } else { 'F' });
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
-    writeln!(out);
-
-    writeln!(out, "pub(crate) const CHUNK: usize = {};", CHUNK);
-    writeln!(out);
-
-    writeln!(
-        out,
-        "pub(crate) static TRIE_START: Align8<[u8; {}]> = Align8([",
-        index_start.len(),
-    );
-    for line in index_start.chunks(16) {
-        write!(out, "   ");
-        for byte in line {
-            write!(out, " 0x{:02X},", byte);
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
-    writeln!(out);
-
-    writeln!(
-        out,
-        "pub(crate) static TRIE_CONTINUE: Align8<[u8; {}]> = Align8([",
-        index_continue.len(),
-    );
-    for line in index_continue.chunks(16) {
-        write!(out, "   ");
-        for byte in line {
-            write!(out, " 0x{:02X},", byte);
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
-    writeln!(out);
-
-    writeln!(
-        out,
-        "pub(crate) static LEAF: Align64<[u8; {}]> = Align64([",
-        halfdense.len(),
-    );
-    for line in halfdense.chunks(16) {
-        write!(out, "   ");
-        for byte in line {
-            write!(out, " 0x{:02X},", byte);
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
-
-    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(PATH);
-    fs::write(path, out).unwrap();
 }
