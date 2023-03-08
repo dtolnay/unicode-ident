@@ -5,24 +5,24 @@ use std::path::Path;
 use std::process;
 
 pub struct Properties {
-    xid_start: Set<u32>,
-    xid_continue: Set<u32>,
+    id_start: Set<u32>,
+    id_continue: Set<u32>,
 }
 
 impl Properties {
-    pub fn is_xid_start(&self, ch: char) -> bool {
-        self.xid_start.contains(&(ch as u32))
+    pub fn is_id_start(&self, ch: char) -> bool {
+        self.id_start.contains(&(ch as u32))
     }
 
-    pub fn is_xid_continue(&self, ch: char) -> bool {
-        self.xid_continue.contains(&(ch as u32))
+    pub fn is_id_continue(&self, ch: char) -> bool {
+        self.id_continue.contains(&(ch as u32))
     }
 }
 
-pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
+pub fn parse_id_properties(ucd_dir: &Path) -> Properties {
     let mut properties = Properties {
-        xid_start: Set::new(),
-        xid_continue: Set::new(),
+        id_start: Set::new(),
+        id_continue: Set::new(),
     };
 
     let filename = "DerivedCoreProperties.txt";
@@ -43,8 +43,8 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
             process::exit(1);
         });
         let set = match name {
-            "XID_Start" => &mut properties.xid_start,
-            "XID_Continue" => &mut properties.xid_continue,
+            "ID_Start" => &mut properties.id_start,
+            "ID_Continue" => &mut properties.id_continue,
             _ => continue,
         };
         set.extend(lo..=hi);

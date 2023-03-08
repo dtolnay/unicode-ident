@@ -56,13 +56,13 @@ and may be repeated by running `cargo criterion`.
 
 ## Comparison of data structures
 
-#### unicode-xid
+#### unicode-id
 
 They use a sorted array of character ranges, and do a binary search to look up
 whether a given character lands inside one of those ranges.
 
 ```rust
-static XID_Continue_table: [(char, char); 763] = [
+static ID_Continue_table: [(char, char); 763] = [
     ('\u{30}', '\u{39}'),  // 0-9
     ('\u{41}', '\u{5a}'),  // A-Z
     …
@@ -194,18 +194,18 @@ The key differences are:
 - Uses a single 2-level trie, rather than 3 disjoint partitions of different
   depth each.
 - Uses significantly larger chunks: 512 bits rather than 64 bits.
-- Compresses the XID\_Start and XID\_Continue properties together
+- Compresses the ID\_Start and ID\_Continue properties together
   simultaneously, rather than duplicating identical trie leaf chunks across the
   two.
 
-The following diagram show the XID\_Start and XID\_Continue Unicode boolean
+The following diagram show the ID\_Start and ID\_Continue Unicode boolean
 properties in uncompressed form, in row-major order:
 
 <table>
-<tr><th>XID_Start</th><th>XID_Continue</th></tr>
+<tr><th>ID_Start</th><th>ID_Continue</th></tr>
 <tr>
-<td><img alt="XID_Start bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647353-c6eeb922-afec-49b2-9ef5-c03e9d1e0760.png"></td>
-<td><img alt="XID_Continue bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647367-f447cca7-2362-4d7d-8cd7-d21c011d329b.png"></td>
+<td><img alt="ID_Start bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647353-c6eeb922-afec-49b2-9ef5-c03e9d1e0760.png"></td>
+<td><img alt="ID_Continue bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647367-f447cca7-2362-4d7d-8cd7-d21c011d329b.png"></td>
 </tr>
 </table>
 
@@ -235,7 +235,7 @@ In contrast to binary search or the `ucd-trie` crate, performing lookups in this
 data structure is straight-line code with no need for branching.
 
 ```asm
-is_xid_start:
+is_id_start:
 	mov eax, edi
 	shr eax, 9
 	lea rcx, [rip + unicode_ident::tables::TRIE_START]

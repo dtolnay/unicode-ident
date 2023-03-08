@@ -7,8 +7,8 @@ fn main() {
     let width = 512;
     let height = 400;
     let diagrams: [(&str, fn(char) -> bool); 2] = [
-        ("xid_start.png", unicode_ident::is_xid_start),
-        ("xid_continue.png", unicode_ident::is_xid_continue),
+        ("id_start.png", unicode_ident::is_id_start),
+        ("id_continue.png", unicode_ident::is_id_continue),
     ];
     for (name, f) in diagrams {
         let mut imgbuf = ImageBuffer::new(width, height);

@@ -22,7 +22,7 @@ fn test_id_size() {
     #[path = "tables/mod.rs"]
     mod tables;
 
-    let size = size_of_val(tables::XID_START) + size_of_val(tables::XID_CONTINUE);
+    let size = size_of_val(tables::ID_START) + size_of_val(tables::ID_CONTINUE);
     assert_eq!(11528, size);
 
     let _ = tables::BY_NAME;
@@ -77,9 +77,9 @@ fn test_trieset_size() {
 
 #[test]
 fn test_fst_size() {
-    let xid_start_fst = include_bytes!("fst/xid_start.fst");
-    let xid_continue_fst = include_bytes!("fst/xid_continue.fst");
-    let size = xid_start_fst.len() + xid_continue_fst.len();
+    let id_start_fst = include_bytes!("fst/id_start.fst");
+    let id_continue_fst = include_bytes!("fst/id_continue.fst");
+    let size = id_start_fst.len() + id_continue_fst.len();
     assert_eq!(137749, size);
 }
 

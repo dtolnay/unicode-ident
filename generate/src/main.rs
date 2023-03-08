@@ -3,9 +3,9 @@
 // $ cargo install ucd-generate
 // $ curl -LO https://www.unicode.org/Public/zipped/15.0.0/UCD.zip
 // $ unzip UCD.zip -d UCD
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/table/tables.rs
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
-// $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --trie-set > tests/trie/trie.rs
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue > tests/tables/tables.rs
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --fst-dir tests/fst
+// $ ucd-generate property-bool UCD --include ID_Start,ID_Continue --trie-set > tests/trie/trie.rs
 // $ cargo run --manifest-path generate/Cargo.toml
 
 #![allow(
@@ -22,7 +22,7 @@ mod output;
 mod parse;
 mod write;
 
-use crate::parse::parse_xid_properties;
+use crate::parse::parse_id_properties;
 use std::collections::{BTreeMap as Map, VecDeque};
 use std::convert::TryFrom;
 use std::fs;
@@ -38,7 +38,7 @@ fn main() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let unicode_ident_dir = manifest_dir.parent().unwrap();
     let ucd_dir = unicode_ident_dir.join(UCD);
-    let properties = parse_xid_properties(&ucd_dir);
+    let properties = parse_id_properties(&ucd_dir);
 
     let mut chunkmap = Map::<[u8; CHUNK], u8>::new();
     let mut dense = Vec::<[u8; CHUNK]>::new();
@@ -70,8 +70,8 @@ fn main() {
                 let code = (i * CHUNK as u32 + j) * 8 + k;
                 if code >= 0x80 {
                     if let Some(ch) = char::from_u32(code) {
-                        *this_start |= (properties.is_xid_start(ch) as u8) << k;
-                        *this_continue |= (properties.is_xid_continue(ch) as u8) << k;
+                        *this_start |= (properties.is_id_start(ch) as u8) << k;
+                        *this_continue |= (properties.is_id_continue(ch) as u8) << k;
                     }
                 }
             }

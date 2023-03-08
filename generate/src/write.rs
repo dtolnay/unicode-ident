@@ -35,8 +35,8 @@ pub fn output(
         write!(out, "   ");
         for j in 0..32 {
             let ch = (i * 32 + j) as char;
-            let is_xid_start = properties.is_xid_start(ch);
-            write!(out, " {},", if is_xid_start { 'T' } else { 'F' });
+            let is_id_start = properties.is_id_start(ch);
+            write!(out, " {},", if is_id_start { 'T' } else { 'F' });
         }
         writeln!(out);
     }
@@ -51,8 +51,8 @@ pub fn output(
         write!(out, "   ");
         for j in 0..32 {
             let ch = (i * 32 + j) as char;
-            let is_xid_continue = properties.is_xid_continue(ch);
-            write!(out, " {},", if is_xid_continue { 'T' } else { 'F' });
+            let is_id_continue = properties.is_id_continue(ch);
+            write!(out, " {},", if is_id_continue { 'T' } else { 'F' });
         }
         writeln!(out);
     }

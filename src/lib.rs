@@ -11,10 +11,10 @@
 //!
 //! [tr31]: https://www.unicode.org/reports/tr31/
 //!
-//! This crate is a better optimized implementation of the older `unicode-xid`
+//! This crate is a better optimized implementation of the older `unicode-id`
 //! crate. This crate uses less static storage, and is able to classify both
 //! ASCII and non-ASCII codepoints with better performance, 2&ndash;10&times;
-//! faster than `unicode-xid`.
+//! faster than `unicode-id`.
 //!
 //! <br>
 //!
@@ -33,7 +33,7 @@
 //! crate bakes into your binary, measured in 1000s of bytes.
 //!
 //! The remaining columns show the **cost per call** to evaluate whether a
-//! single `char` has the XID\_Start or XID\_Continue Unicode property,
+//! single `char` has the ID\_Start or ID\_Continue Unicode property,
 //! comparing across different ratios of ASCII to non-ASCII codepoints in the
 //! input data.
 //!
@@ -59,14 +59,14 @@
 //!
 //! ## Comparison of data structures
 //!
-//! #### unicode-xid
+//! #### unicode-id
 //!
 //! They use a sorted array of character ranges, and do a binary search to look
 //! up whether a given character lands inside one of those ranges.
 //!
 //! ```rust
 //! # const _: &str = stringify! {
-//! static XID_Continue_table: [(char, char); 763] = [
+//! static ID_Continue_table: [(char, char); 763] = [
 //!     ('\u{30}', '\u{39}'),  // 0-9
 //!     ('\u{41}', '\u{5a}'),  // A-Z
 //! # "
@@ -203,18 +203,18 @@
 //! - Uses a single 2-level trie, rather than 3 disjoint partitions of different
 //!   depth each.
 //! - Uses significantly larger chunks: 512 bits rather than 64 bits.
-//! - Compresses the XID\_Start and XID\_Continue properties together
+//! - Compresses the ID\_Start and ID\_Continue properties together
 //!   simultaneously, rather than duplicating identical trie leaf chunks across
 //!   the two.
 //!
-//! The following diagram show the XID\_Start and XID\_Continue Unicode boolean
+//! The following diagram show the ID\_Start and ID\_Continue Unicode boolean
 //! properties in uncompressed form, in row-major order:
 //!
 //! <table>
-//! <tr><th>XID_Start</th><th>XID_Continue</th></tr>
+//! <tr><th>ID_Start</th><th>ID_Continue</th></tr>
 //! <tr>
-//! <td><img alt="XID_Start bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647353-c6eeb922-afec-49b2-9ef5-c03e9d1e0760.png"></td>
-//! <td><img alt="XID_Continue bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647367-f447cca7-2362-4d7d-8cd7-d21c011d329b.png"></td>
+//! <td><img alt="ID_Start bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647353-c6eeb922-afec-49b2-9ef5-c03e9d1e0760.png"></td>
+//! <td><img alt="ID_Continue bitmap" width="256" src="https://user-images.githubusercontent.com/1940490/168647367-f447cca7-2362-4d7d-8cd7-d21c011d329b.png"></td>
 //! </tr>
 //! </table>
 //!

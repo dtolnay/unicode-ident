@@ -1,12 +1,12 @@
 [package]
-name = "unicode-ident"
+name = "unicode-id-start"
 version = "1.0.8"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "no-std"]
 description = "Determine whether characters have the ID_Start or ID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-id-start"
 edition = "2018"
-keywords = ["unicode", "xid"]
+keywords = ["unicode", "id"]
 license = "(MIT OR Apache-2.0) AND Unicode-DFS-2016"
 repository = "https://github.com/dtolnay/unicode-ident"
 rust-version = "1.31"
@@ -17,7 +17,7 @@ fst = "0.4"
 rand = { version = "0.8", features = ["small_rng"] }
 roaring = "0.10"
 ucd-trie = { version = "0.1", default-features = false }
-unicode-xid = "0.2.4"
+unicode-id = "0.3.3"
 
 [[bench]]
 name = "id"
