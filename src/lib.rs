@@ -277,7 +277,7 @@ pub const fn is_xid_continue(ch: char) -> bool {
 }
 
 const fn get<T>(slice: &[T], index: usize) -> Option<&T> {
-    match index > slice.len() {
+    match index >= slice.len() {
         true => None,
         false => Some(&slice[index]),
     }
