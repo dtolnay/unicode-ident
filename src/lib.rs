@@ -250,7 +250,7 @@ mod tables;
 
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
-pub fn is_xid_start(ch: char) -> bool {
+pub const fn is_xid_start(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_START.0[ch as usize];
     }
@@ -259,7 +259,7 @@ pub fn is_xid_start(ch: char) -> bool {
     unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
-pub fn is_xid_continue(ch: char) -> bool {
+pub const fn is_xid_continue(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_CONTINUE.0[ch as usize];
     }
