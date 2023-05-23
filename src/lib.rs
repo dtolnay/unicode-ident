@@ -248,22 +248,44 @@
 #[rustfmt::skip]
 mod tables;
 
+use core::hint::unreachable_unchecked;
+
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
 pub const fn is_xid_start(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_START.0[ch as usize];
     }
-    let chunk = *TRIE_START.0.get(ch as usize / 8 / CHUNK).unwrap_or(&0);
+    let chunk = match get(&TRIE_START.0, ch as usize / 8 / CHUNK) {
+        Some(found) => *found,
+        None => 0,
+    };
     let offset = chunk as usize * CHUNK / 2 + ch as usize / 8 % CHUNK;
-    unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
+    unsafe { get_unchecked(&LEAF.0, offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
 pub const fn is_xid_continue(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_CONTINUE.0[ch as usize];
     }
-    let chunk = *TRIE_CONTINUE.0.get(ch as usize / 8 / CHUNK).unwrap_or(&0);
+    let chunk = match get(&TRIE_CONTINUE.0, ch as usize / 8 / CHUNK) {
+        Some(found) => *found,
+        None => 0,
+    };
     let offset = chunk as usize * CHUNK / 2 + ch as usize / 8 % CHUNK;
-    unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
+    unsafe { get_unchecked(&LEAF.0, offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
+}
+
+const fn get<T>(slice: &[T], index: usize) -> Option<&T> {
+    match index > slice.len() {
+        true => None,
+        false => Some(&slice[index]),
+    }
+}
+
+const unsafe fn get_unchecked<T>(slice: &[T], index: usize) -> &T {
+    match get(slice, index) {
+        Some(t) => t,
+        None => unreachable_unchecked(),
+    }
 }
