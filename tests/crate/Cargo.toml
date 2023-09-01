@@ -9,6 +9,6 @@ publish = false
 path = "test.rs"
 
 [dependencies]
-unicode-ident = { path = "../.." }
+unicode-id-start = { path = "../.." }
 
 [workspace]

@@ -1,3 +1,3 @@
 #![no_std]
 
-pub use unicode_ident::*;
+pub use unicode_id_start::*;
