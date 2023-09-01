@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This crate is a better optimized implementation of the older `unicode-id` crate.
+> This crate uses less static storage, and is able to classify both ASCII and non-ASCII codepoints with better performance, 2&ndash;10&times; faster than `unicode-id`.
+
 Unicode ID_start
 =============
 
@@ -10,11 +14,6 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 `char` values are valid in programming language identifiers.
 
 [tr31]: https://www.unicode.org/reports/tr31/
-
-This crate is a better optimized implementation of the older `unicode-id`
-crate. This crate uses less static storage, and is able to classify both ASCII
-and non-ASCII codepoints with better performance, 2&ndash;10&times; faster than
-`unicode-id`.
 
 <br>
 
