@@ -253,6 +253,7 @@ mod tables;
 
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
+/// Check ascii and unicode for id_start
 #[inline]
 pub fn is_id_start(ch: char) -> bool {
     if ch.is_ascii() {
@@ -261,6 +262,7 @@ pub fn is_id_start(ch: char) -> bool {
     is_id_start_unicode(ch)
 }
 
+/// Check unicode only for id_start
 #[inline]
 pub fn is_id_start_unicode(ch: char) -> bool {
     let chunk = *TRIE_START.0.get(ch as usize / 8 / CHUNK).unwrap_or(&0);
@@ -268,6 +270,7 @@ pub fn is_id_start_unicode(ch: char) -> bool {
     unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
+/// Check ascii and unicode for id_continue
 #[inline]
 pub fn is_id_continue(ch: char) -> bool {
     if ch.is_ascii() {
@@ -276,6 +279,7 @@ pub fn is_id_continue(ch: char) -> bool {
     is_id_continue_unicode(ch)
 }
 
+/// Check and unicode only for id_continue
 #[inline]
 pub fn is_id_continue_unicode(ch: char) -> bool {
     let chunk = *TRIE_CONTINUE.0.get(ch as usize / 8 / CHUNK).unwrap_or(&0);
