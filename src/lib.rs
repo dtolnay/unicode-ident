@@ -253,11 +253,12 @@ mod tables;
 
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
+#[inline]
 pub fn is_id_start(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_START.0[ch as usize];
     }
-    is_id_continue(ch)
+    is_id_start_unicode(ch)
 }
 
 #[inline]
@@ -267,6 +268,7 @@ pub fn is_id_start_unicode(ch: char) -> bool {
     unsafe { LEAF.0.get_unchecked(offset) }.wrapping_shr(ch as u32 % 8) & 1 != 0
 }
 
+#[inline]
 pub fn is_id_continue(ch: char) -> bool {
     if ch.is_ascii() {
         return ASCII_CONTINUE.0[ch as usize];
