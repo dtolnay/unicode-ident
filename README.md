@@ -15,6 +15,16 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 
 [tr31]: https://www.unicode.org/reports/tr31/
 
+## Changelog
+
+### 1.1.2
+
+- Update to Unicode 15.1.0
+
+### 1.1.1
+
+- Update to Unicode 15.0.0
+
 <br>
 
 ## Comparison of performance
