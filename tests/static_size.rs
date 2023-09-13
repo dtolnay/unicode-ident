@@ -13,7 +13,7 @@ fn test_size() {
         + size_of_val(&tables::TRIE_START)
         + size_of_val(&tables::TRIE_CONTINUE)
         + size_of_val(&tables::LEAF);
-    assert_eq!(10016, size);
+    assert_eq!(10080, size);
 }
 
 #[test]
@@ -23,7 +23,7 @@ fn test_id_size() {
     mod tables;
 
     let size = size_of_val(tables::ID_START) + size_of_val(tables::ID_CONTINUE);
-    assert_eq!(11416, size);
+    assert_eq!(11432, size);
 
     let _ = tables::BY_NAME;
 }
@@ -70,7 +70,7 @@ fn test_trieset_size() {
         + size_of_val(tree3_level2)
         + size_of_val(tree3_level3);
 
-    assert_eq!(10192, start_size + continue_size);
+    assert_eq!(10184, start_size + continue_size);
 
     let _ = trie::BY_NAME;
 }
@@ -80,7 +80,7 @@ fn test_fst_size() {
     let id_start_fst = include_bytes!("fst/id_start.fst");
     let id_continue_fst = include_bytes!("fst/id_continue.fst");
     let size = id_start_fst.len() + id_continue_fst.len();
-    assert_eq!(136291, size);
+    assert_eq!(137278, size);
 }
 
 #[test]
