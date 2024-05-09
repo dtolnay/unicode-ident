@@ -19,11 +19,16 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 
 ### 1.1.2
 
-- Update to Unicode 15.1.0
+- Unicode 15.1.0
 
 ### 1.1.1
 
-- Update to Unicode 15.0.0
+- Unicode 15.0.0
+
+### 1.0.4
+
+- Unicode 14.0.0
+
 
 <br>
 
