@@ -22,7 +22,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: taiki-e/checkout-action@v1
       - uses: dtolnay/rust-toolchain@stable
       - id: ucd-generate
         run: echo "version=$(grep 'ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+' tests/tables/tables.rs --only-matching)" >> $GITHUB_OUTPUT
@@ -47,7 +47,7 @@ jobs:
         rust: [nightly, beta, stable, 1.74.0]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: taiki-e/checkout-action@v1
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: taiki-e/checkout-action@v1
       - uses: dtolnay/rust-toolchain@1.31.0
       - run: cargo check --manifest-path tests/crate/Cargo.toml
 
@@ -74,7 +74,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: taiki-e/checkout-action@v1
       - uses: dtolnay/rust-toolchain@clippy
       - run: cargo clippy --tests --benches --workspace -- -Dclippy::all -Dclippy::pedantic
 
@@ -84,7 +84,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v3
+      - uses: taiki-e/checkout-action@v1
       - uses: dtolnay/install@cargo-outdated
       # - run: cargo outdated --workspace --exit-code 1 # https://github.com/kbknapp/cargo-outdated/issues/389
       - run: cargo outdated --exit-code 1
