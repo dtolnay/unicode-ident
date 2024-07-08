@@ -14,6 +14,10 @@ fn compare_all_implementations() {
     let id_continue_roaring = roaring::id_continue_bitmap();
 
     for ch in '\0'..=char::MAX {
+        // See test legacy_katakana_middle_dot_patch in tests/patch.rs
+        if matches!(ch, '・' | '･') {
+            continue;
+        }
         let thought_to_be_start = unicode_id_start::is_id_start(ch);
         let thought_to_be_continue = unicode_id_start::is_id_continue(ch);
 

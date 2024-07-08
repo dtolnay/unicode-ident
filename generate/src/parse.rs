@@ -50,6 +50,16 @@ pub fn parse_id_properties(ucd_dir: &Path) -> Properties {
         set.extend(lo..=hi);
     }
 
+    // <https://github.com/evanw/esbuild/pull/3424>
+    // Unicode 4.1 through Unicode 15 omitted these two characters from ID_Continue
+    // by accident. However, this accident was corrected in Unicode 15.1. Any JS VM
+    // that supports ES6+ but that uses a version of Unicode earlier than 15.1 will
+    // consider these to be a syntax error, so we deliberately omit these characters
+    // from the set of identifiers that are valid in both ES5 and ES6+. For more info
+    // see 2.2 in https://www.unicode.org/L2/L2023/23160-utc176-properties-recs.pdf
+    properties.id_continue.remove(&0x30FB);
+    properties.id_continue.remove(&0xFF65);
+
     properties
 }
 
