@@ -17,7 +17,7 @@ fst = "0.4"
 rand = { version = "0.8", features = ["small_rng"] }
 roaring = "0.10"
 ucd-trie = { version = "0.1", default-features = false }
-unicode-xid = "0.2.4"
+unicode-xid = "0.2.6"
 
 [[bench]]
 name = "xid"
