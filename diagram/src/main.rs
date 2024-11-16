@@ -13,7 +13,7 @@ fn main() {
     for (name, f) in diagrams {
         let mut imgbuf = ImageBuffer::new(width, height);
         for (col, row, pixel) in imgbuf.enumerate_pixels_mut() {
-            *pixel = if char::from_u32(row * width + col).map_or(false, f) {
+            *pixel = if char::from_u32(row * width + col).is_some_and(f) {
                 Rgb([0u8, 0, 0])
             } else {
                 Rgb([255, 255, 255])
