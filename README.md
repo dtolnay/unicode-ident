@@ -264,7 +264,7 @@ is_xid_start:
 ## License
 
 Use of the Unicode Character Database, as this crate does, is governed by the <a
-href="LICENSE-UNICODE">UNICODE LICENSE V3</a>.
+href="LICENSE-UNICODE">Unicode license</a>.
 
 All intellectual property within this crate that is **not generated** using the
 Unicode Character Database as input is licensed under either of <a
