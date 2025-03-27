@@ -24,7 +24,7 @@ name = "xid"
 harness = false
 
 [workspace]
-members = ["diagram", "generate"]
+members = ["c-api", "diagram", "generate"]
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

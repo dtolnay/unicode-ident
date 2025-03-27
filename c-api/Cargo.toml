@@ -1,0 +1,13 @@
+[package]
+name = "c-api"
+version = "0.1.0"
+edition = "2018"
+publish = false
+
+[lib]
+name = "unicode_ident"
+path = "lib.rs"
+crate-type = ["staticlib"]
+
+[dependencies]
+unicode-ident.path = ".."
