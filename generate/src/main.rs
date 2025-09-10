@@ -1,7 +1,7 @@
 // To regenerate tables, run the following in the repo root:
 //
 // $ cargo install ucd-generate
-// $ curl -LO https://www.unicode.org/Public/16.0.0/ucd/UCD.zip
+// $ curl -LO https://www.unicode.org/Public/17.0.0/ucd/UCD.zip
 // $ unzip UCD.zip -d UCD
 // $ ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/table/tables.rs
 // $ ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
