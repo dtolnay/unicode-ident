@@ -29,7 +29,7 @@ pub fn parse_xid_properties(ucd_dir: &Path) -> Properties {
     let path = ucd_dir.join(filename);
     let contents = fs::read_to_string(path).unwrap_or_else(|err| {
         let suggestion =
-            "Download from https://www.unicode.org/Public/zipped/l5.0.0/UCD.zip and unzip.";
+            "Download from https://www.unicode.org/Public/latest/ucd/UCD.zip and unzip.";
         let _ = writeln!(io::stderr(), "{}: {err}\n{suggestion}", ucd_dir.display());
         process::exit(1);
     });
