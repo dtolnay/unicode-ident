@@ -4,7 +4,7 @@
 //
 // Unicode version: 16.0.0.
 //
-// ucd-generate 0.3.0 is available on crates.io.
+// ucd-generate 0.3.1 is available on crates.io.
 
 pub const BY_NAME: &'static [(&'static str, &'static [(u32, u32)])] = &[
   ("XID_Continue", XID_CONTINUE), ("XID_Start", XID_START),
