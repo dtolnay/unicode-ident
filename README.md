@@ -39,13 +39,13 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 [`ucd-generate`]: https://github.com/BurntSushi/ucd-generate
 [`roaring`]: https://github.com/RoaringBitmap/roaring-rs
 
-| | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
-|---|---|---|---|---|---|
-| **`unicode-ident`** | 10.5 K | 1.03 ns | 1.02 ns | 1.11 ns | 1.66 ns |
-| **`unicode-xid`** | 12.0 K | 2.57 ns | 2.74 ns | 3.20 ns | 9.35 ns |
-| **`ucd-trie`** | 10.4 K | 1.27 ns | 1.27 ns | 1.41 ns | 2.53 ns |
-| **`fst`** | 144 K | 49.3 ns | 49.1 ns | 47.1 ns | 27.9 ns |
-| **`roaring`** | 66.1 K | 4.10 ns | 4.05 ns | 4.02 ns | 5.12 ns |
+|                     | static storage | 0% nonascii | 1%       | 10%      | 100% nonascii |
+|---------------------|----------------|-------------|----------|----------|---------------|
+| **`unicode-ident`** | 10.3 K         | 0.58 ns     | 0.62 ns  | 0.98 ns  | 1.34 ns       |
+| **`unicode-xid`**   | 12.0 K         | 2.40 ns     | 2.46 ns  | 2.84 ns  | 5.66 ns       |
+| **`ucd-trie`**      | 10.4 K         | 0.92 ns     | 0.97 ns  | 1.42 ns  | 2.23 ns       |
+| **`fst`**           | 144 K          | 28.49 ns    | 28.33 ns | 27.64 ns | 15.70 ns      |
+| **`roaring`**       | 66.1 K         | 2.85 ns     | 2.85 ns  | 3.23 ns  | 4.55 ns       |
 
 Source code for the benchmark is provided in the *bench* directory of this repo
 and may be repeated by running `cargo criterion`.
