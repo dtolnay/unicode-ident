@@ -43,11 +43,11 @@
 //!
 //! | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 //! |---|---|---|---|---|---|
-//! | **`unicode-ident`** | 10.5 K | 1.03 ns | 1.02 ns | 1.11 ns | 1.66 ns |
-//! | **`unicode-xid`** | 12.0 K | 2.57 ns | 2.74 ns | 3.20 ns | 9.35 ns |
-//! | **`ucd-trie`** | 10.4 K | 1.27 ns | 1.27 ns | 1.41 ns | 2.53 ns |
-//! | **`fst`** | 144 K | 49.3 ns | 49.1 ns | 47.1 ns | 27.9 ns |
-//! | **`roaring`** | 66.1 K | 4.10 ns | 4.05 ns | 4.02 ns | 5.12 ns |
+//! | **`unicode-ident`** | 10.5 K | 1.16 ns | 1.17 ns | 1.26 ns | 1.61 ns |
+//! | **`unicode-xid`** | 12.0 K | 2.43 ns | 2.50 ns | 2.85 ns | 8.65 ns |
+//! | **`ucd-trie`** | 10.4 K | 1.28 ns | 1.25 ns | 1.20 ns | 1.97 ns |
+//! | **`fst`** | 144 K | 50.9 ns | 51.0 ns | 48.5 ns | 26.7 ns |
+//! | **`roaring`** | 66.1 K | 4.28 ns | 4.22 ns | 4.25 ns | 4.61 ns |
 //!
 //! Source code for the benchmark is provided in the *bench* directory of this
 //! repo and may be repeated by running `cargo criterion`.
