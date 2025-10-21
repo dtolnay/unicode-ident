@@ -235,27 +235,19 @@ data structure is straight-line code with no need for branching.
 ```asm
 is_xid_start:
 	mov eax, edi
+	mov ecx, offset unicode_ident::ZERO
 	shr eax, 9
-	lea rcx, [rip + unicode_ident::tables::TRIE_START]
-	add rcx, rax
-	xor eax, eax
-	cmp edi, 201728
-	cmovb rax, rcx
-	test rax, rax
-	lea rcx, [rip + .L__unnamed_1]
-	cmovne rcx, rax
+	cmp edi, 210432
+	lea rax, [rax + unicode_ident::tables::TRIE_START]
+	cmovb rcx, rax
 	movzx eax, byte ptr [rcx]
-	shl rax, 5
-	mov ecx, edi
-	shr ecx, 3
-	and ecx, 63
-	add rcx, rax
-	lea rax, [rip + unicode_ident::tables::LEAF]
-	mov al, byte ptr [rax + rcx]
-	and dil, 7
-	mov ecx, edi
-	shr al, cl
-	and al, 1
+	mov ecx, 1539
+	bextr ecx, edi, ecx
+	and edi, 7
+	shl eax, 5
+	movzx eax, byte ptr [rax + rcx + unicode_ident::tables::LEAF]
+	bt eax, edi
+	setb al
 	ret
 ```
 
