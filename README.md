@@ -41,7 +41,7 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-ident`** | 10.5 K | 1.16 ns | 1.17 ns | 1.26 ns | 1.61 ns |
+| **`unicode-ident`** | 10.3 K | 1.16 ns | 1.17 ns | 1.26 ns | 1.61 ns |
 | **`unicode-xid`** | 12.0 K | 2.43 ns | 2.50 ns | 2.85 ns | 8.65 ns |
 | **`ucd-trie`** | 10.4 K | 1.28 ns | 1.25 ns | 1.20 ns | 1.97 ns |
 | **`fst`** | 144 K | 50.9 ns | 51.0 ns | 48.5 ns | 26.7 ns |
