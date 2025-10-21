@@ -9,9 +9,6 @@ const HEAD: &str = "\
 // $ unzip UCD.zip -d UCD
 // $ cargo run --manifest-path generate/Cargo.toml
 
-const T: bool = true;
-const F: bool = false;
-
 #[repr(C, align(8))]
 pub(crate) struct Align8<T>(pub(crate) T);
 #[repr(C, align(64))]
@@ -27,36 +24,22 @@ pub fn output(
     let mut out = Output::new();
     writeln!(out, "{}", HEAD);
 
+    let ascii_start = (0u8..128)
+        .map(|c| (properties.is_xid_start(c as char) as u128) << c)
+        .sum::<u128>();
     writeln!(
         out,
-        "pub(crate) static ASCII_START: Align64<[bool; 128]> = Align64([",
+        "pub(crate) const ASCII_START: u128 = 0x{ascii_start:x};",
     );
-    for i in 0u8..4 {
-        write!(out, "   ");
-        for j in 0..32 {
-            let ch = (i * 32 + j) as char;
-            let is_xid_start = properties.is_xid_start(ch);
-            write!(out, " {},", if is_xid_start { 'T' } else { 'F' });
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
-    writeln!(out);
 
+    let ascii_continue = (0u8..128)
+        .map(|c| (properties.is_xid_continue(c as char) as u128) << c)
+        .sum::<u128>();
     writeln!(
         out,
-        "pub(crate) static ASCII_CONTINUE: Align64<[bool; 128]> = Align64([",
+        "pub(crate) const ASCII_CONTINUE: u128 = 0x{ascii_continue:x};",
     );
-    for i in 0u8..4 {
-        write!(out, "   ");
-        for j in 0..32 {
-            let ch = (i * 32 + j) as char;
-            let is_xid_continue = properties.is_xid_continue(ch);
-            write!(out, " {},", if is_xid_continue { 'T' } else { 'F' });
-        }
-        writeln!(out);
-    }
-    writeln!(out, "]);");
+
     writeln!(out);
 
     writeln!(out, "pub(crate) const CHUNK: usize = {};", CHUNK);
