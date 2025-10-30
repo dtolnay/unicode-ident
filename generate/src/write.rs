@@ -26,7 +26,7 @@ pub fn output(
 
     writeln!(
         out,
-        "pub const UNICODE_VERSION: (u64, u64, u64) = {:?};",
+        "pub const UNICODE_VERSION: (u8, u8, u8) = {:?};",
         properties.unicode_version(),
     );
     writeln!(out);
