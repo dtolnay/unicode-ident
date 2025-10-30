@@ -6,13 +6,13 @@ use std::path::Path;
 use std::process;
 
 pub struct Properties {
-    unicode_version: (u64, u64, u64),
+    unicode_version: (u8, u8, u8),
     xid_start: Set<u32>,
     xid_continue: Set<u32>,
 }
 
 impl Properties {
-    pub const fn unicode_version(&self) -> (u64, u64, u64) {
+    pub const fn unicode_version(&self) -> (u8, u8, u8) {
         self.unicode_version
     }
 
@@ -81,7 +81,7 @@ fn parse_codepoint(s: &str) -> Option<u32> {
     u32::from_str_radix(s, 16).ok()
 }
 
-fn parse_unicode_version(filename: &str, contents: &str) -> (u64, u64, u64) {
+fn parse_unicode_version(filename: &str, contents: &str) -> (u8, u8, u8) {
     let (name, extension) = filename
         .rsplit_once('.')
         .expect("Failed to split file name into name and extension");
