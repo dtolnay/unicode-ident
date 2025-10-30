@@ -252,6 +252,7 @@
 #[rustfmt::skip]
 mod tables;
 
+pub use crate::tables::UNICODE_VERSION;
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
 static ZERO: u8 = 0;

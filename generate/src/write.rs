@@ -24,6 +24,13 @@ pub fn output(
     let mut out = Output::new();
     writeln!(out, "{}", HEAD);
 
+    writeln!(
+        out,
+        "pub const UNICODE_VERSION: (u64, u64, u64) = {:?};",
+        properties.unicode_version()
+    );
+    writeln!(out);
+
     let ascii_start = (0u8..128)
         .map(|c| (properties.is_xid_start(c as char) as u128) << c)
         .sum::<u128>();
