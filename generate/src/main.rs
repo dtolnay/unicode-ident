@@ -24,7 +24,6 @@ mod write;
 
 use crate::parse::parse_xid_properties;
 use std::collections::{BTreeMap as Map, VecDeque};
-use std::convert::TryFrom;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
