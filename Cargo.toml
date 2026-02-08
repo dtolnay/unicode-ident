@@ -13,7 +13,7 @@ rust-version = "1.68"
 
 [dev-dependencies]
 fst = "0.4"
-rand = "0.9"
+rand = "0.10"
 roaring = "0.11"
 ucd-trie = { version = "0.1", default-features = false }
 unicode-xid = "0.2.6"
