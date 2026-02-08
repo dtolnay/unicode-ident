@@ -9,7 +9,7 @@ edition = "2021"
 keywords = ["unicode", "xid"]
 license = "(MIT OR Apache-2.0) AND Unicode-3.0"
 repository = "https://github.com/dtolnay/unicode-ident"
-rust-version = "1.68"
+rust-version = "1.71"
 
 [dev-dependencies]
 fst = "0.4"
