@@ -107,8 +107,11 @@ fn main() {
 
     // Build index from front-half value to chunk indices for efficient lookup.
     let mut chunks_by_front: Map<[u8; CHUNK / 2], Vec<usize>> = Map::new();
-    for (j, front) in front_of.iter().enumerate() {
-        chunks_by_front.entry(*front).or_default().push(j);
+    for (j, &front) in front_of.iter().enumerate() {
+        chunks_by_front
+            .entry(front)
+            .or_insert_with(Vec::new)
+            .push(j);
     }
 
     // adj_list[i] = chunks whose front half matches chunk i's back half,
@@ -118,8 +121,9 @@ fn main() {
         .map(|i| {
             chunks_by_front
                 .get(&back_of[i])
-                .map(|js| js.iter().copied().filter(|&j| j != i).collect())
-                .unwrap_or_default()
+                .map_or_else(Vec::new, |js| {
+                    js.iter().copied().filter(|&j| j != i).collect()
+                })
         })
         .collect();
 
