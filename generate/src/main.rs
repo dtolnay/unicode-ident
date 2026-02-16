@@ -23,7 +23,7 @@ mod parse;
 mod write;
 
 use crate::parse::parse_xid_properties;
-use std::collections::{BTreeMap as Map, VecDeque};
+use std::collections::BTreeMap as Map;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -86,57 +86,119 @@ fn main() {
         index_continue.pop();
     }
 
-    let mut halfchunkmap = Map::new();
-    for chunk in &dense {
-        let mut front = [0u8; CHUNK / 2];
-        let mut back = [0u8; CHUNK / 2];
-        front.copy_from_slice(&chunk[..CHUNK / 2]);
-        back.copy_from_slice(&chunk[CHUNK / 2..]);
-        halfchunkmap
-            .entry(front)
-            .or_insert_with(VecDeque::new)
-            .push_back(back);
+    // Compress the LEAF array by overlapping chunks at half-chunk boundaries.
+    //
+    // If chunk i's back half equals chunk j's front half, placing them
+    // adjacently saves 32 bytes. We find the maximum number of such overlaps
+    // by modeling this as a bipartite matching problem (left side = back
+    // halves, right side = front halves) and solving with Kuhn's algorithm.
+
+    let num_chunks = dense.len();
+
+    let front_of: Vec<[u8; CHUNK / 2]> = dense
+        .iter()
+        .map(|c| c[..CHUNK / 2].try_into().unwrap())
+        .collect();
+    let back_of: Vec<[u8; CHUNK / 2]> = dense
+        .iter()
+        .map(|c| c[CHUNK / 2..].try_into().unwrap())
+        .collect();
+
+    // Build index from front-half value to chunk indices for efficient lookup.
+    let mut chunks_by_front: Map<[u8; CHUNK / 2], Vec<usize>> = Map::new();
+    for (j, front) in front_of.iter().enumerate() {
+        chunks_by_front.entry(*front).or_default().push(j);
     }
 
-    let mut halfdense = Vec::<u8>::new();
-    let mut dense_to_halfdense = Map::<u8, u8>::new();
-    for chunk in &dense {
-        let original_pos = chunkmap[chunk];
-        if dense_to_halfdense.contains_key(&original_pos) {
-            continue;
-        }
-        let mut front = [0u8; CHUNK / 2];
-        let mut back = [0u8; CHUNK / 2];
-        front.copy_from_slice(&chunk[..CHUNK / 2]);
-        back.copy_from_slice(&chunk[CHUNK / 2..]);
-        dense_to_halfdense.insert(
-            original_pos,
-            match u8::try_from(halfdense.len() / (CHUNK / 2)) {
-                Ok(byte) => byte,
-                Err(_) => panic!("exceeded 256 half-chunks"),
-            },
-        );
-        halfdense.extend_from_slice(&front);
-        halfdense.extend_from_slice(&back);
-        while let Some(next) = halfchunkmap.get_mut(&back).and_then(VecDeque::pop_front) {
-            let mut concat = empty_chunk;
-            concat[..CHUNK / 2].copy_from_slice(&back);
-            concat[CHUNK / 2..].copy_from_slice(&next);
-            let original_pos = chunkmap[&concat];
-            if dense_to_halfdense.contains_key(&original_pos) {
-                continue;
+    // adj_list[i] = chunks whose front half matches chunk i's back half,
+    // meaning they can follow chunk i with a 32-byte overlap. Exclude
+    // self-edges (the all-zeros and all-ones chunks have front == back).
+    let adj_list: Vec<Vec<usize>> = (0..num_chunks)
+        .map(|i| {
+            chunks_by_front
+                .get(&back_of[i])
+                .map(|js| js.iter().copied().filter(|&j| j != i).collect())
+                .unwrap_or_default()
+        })
+        .collect();
+
+    // Maximum bipartite matching via Kuhn's algorithm (augmenting paths).
+    // prev_of[j] = Some(i) means chunk i is matched to precede chunk j.
+    let mut prev_of: Vec<Option<usize>> = vec![None; num_chunks];
+
+    // DFS for an augmenting path from `src`. If found, augments the matching
+    // in-place (rehoming existing matches to preserve validity) and returns true.
+    fn try_kuhn(
+        src: usize,
+        adj_list: &[Vec<usize>],
+        visited: &mut [bool],
+        prev_of: &mut [Option<usize>],
+    ) -> bool {
+        for &dst in &adj_list[src] {
+            if !visited[dst] {
+                visited[dst] = true;
+                // If dst is free, or its current match can be rehomed, claim dst.
+                if prev_of[dst].is_none_or(|prev| try_kuhn(prev, adj_list, visited, prev_of)) {
+                    prev_of[dst] = Some(src);
+                    return true;
+                }
             }
-            dense_to_halfdense.insert(
-                original_pos,
-                match u8::try_from(halfdense.len() / (CHUNK / 2) - 1) {
-                    Ok(byte) => byte,
-                    Err(_) => panic!("exceeded 256 half-chunks"),
-                },
-            );
-            halfdense.extend_from_slice(&next);
-            back = next;
+        }
+        false
+    }
+
+    // Try every left vertex. A failed attempt stays failed because later
+    // rounds only shrink the set of free right vertices (Berge's theorem).
+    for i in 0..num_chunks {
+        let mut visited = vec![false; num_chunks];
+        try_kuhn(i, &adj_list, &mut visited, &mut prev_of);
+    }
+
+    // Invert the matching into a forward map for chain traversal.
+    let mut next_of: Vec<Option<usize>> = vec![None; num_chunks];
+    for (j, &prev) in prev_of.iter().enumerate() {
+        if let Some(prev) = prev {
+            next_of[prev] = Some(j);
         }
     }
+
+    // Chunk 0 (all zeros) is special and must be laid out first at halfdense position 0,
+    // because the runtime defaults to index 0 for codepoints beyond the trie.
+    // Remove any incoming edge so chunk 0 becomes a chain start.
+    if let Some(prev) = prev_of[0] {
+        next_of[prev] = None;
+        prev_of[0] = None;
+    }
+
+    // Lay out chains into halfdense, starting with chunk 0's chain.
+    let mut halfdense = Vec::<u8>::new();
+    let mut dense_to_halfdense = Map::<u8, u8>::new();
+
+    for start in (0..num_chunks).filter(|&i| prev_of[i].is_none()) {
+        dense_to_halfdense.insert(
+            start as u8,
+            u8::try_from(halfdense.len() / (CHUNK / 2)).expect("exceeded 256 half-chunks"),
+        );
+        halfdense.extend_from_slice(&front_of[start]);
+        halfdense.extend_from_slice(&back_of[start]);
+
+        // Write the rest of the chain: each chunk's front half overlaps the
+        // previous chunk's back half, so only append the back half.
+        let mut curr = start;
+        while let Some(next) = next_of[curr] {
+            dense_to_halfdense.insert(
+                next as u8,
+                u8::try_from(halfdense.len() / (CHUNK / 2) - 1).expect("exceeded 256 half-chunks"),
+            );
+            halfdense.extend_from_slice(&back_of[next]);
+            curr = next;
+        }
+    }
+
+    // Each chunk can be both a predecessor (back half) and a successor
+    // (front half), so next_of can form cycles with no chain start.
+    // We broke chunk 0's cycle above; verify no others exist.
+    assert_eq!(dense_to_halfdense.len(), num_chunks, "not all chunks were laid out");
 
     for index in &mut index_start {
         *index = dense_to_halfdense[index];
