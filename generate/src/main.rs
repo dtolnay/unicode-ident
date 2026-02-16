@@ -90,9 +90,9 @@ fn main() {
     // Compress the LEAF array by overlapping chunks at half-chunk boundaries.
     //
     // If chunk i's back half equals chunk j's front half, placing them
-    // adjacently saves 32 bytes. We find the maximum number of such overlaps
-    // by modeling this as a bipartite matching problem (left side = back
-    // halves, right side = front halves) and solving with Kuhn's algorithm.
+    // adjacently saves 32 bytes. We find the maximum number of such overlaps by
+    // modeling this as a bipartite matching problem (left side = back halves,
+    // right side = front halves) and solving with Kuhn's algorithm.
 
     let num_chunks = dense.len();
 
@@ -128,7 +128,8 @@ fn main() {
     let mut prev_of: Vec<Option<usize>> = vec![None; num_chunks];
 
     // DFS for an augmenting path from `src`. If found, augments the matching
-    // in-place (rehoming existing matches to preserve validity) and returns true.
+    // in-place (rehoming existing matches to preserve validity) and returns
+    // true.
     fn try_kuhn(
         src: usize,
         adj_list: &[Vec<usize>],
@@ -148,8 +149,8 @@ fn main() {
         false
     }
 
-    // Try every left vertex. A failed attempt stays failed because later
-    // rounds only shrink the set of free right vertices (Berge's theorem).
+    // Try every left vertex. A failed attempt stays failed because later rounds
+    // only shrink the set of free right vertices (Berge's theorem).
     for i in 0..num_chunks {
         let mut visited = vec![false; num_chunks];
         try_kuhn(i, &adj_list, &mut visited, &mut prev_of);
@@ -163,9 +164,9 @@ fn main() {
         }
     }
 
-    // Chunk 0 (all zeros) is special and must be laid out first at halfdense position 0,
-    // because the runtime defaults to index 0 for codepoints beyond the trie.
-    // Remove any incoming edge so chunk 0 becomes a chain start.
+    // Chunk 0 (all zeros) is special and must be laid out first at halfdense
+    // position 0, because the runtime defaults to index 0 for codepoints beyond
+    // the trie. Remove any incoming edge so chunk 0 becomes a chain start.
     if let Some(prev) = prev_of[0] {
         next_of[prev] = None;
         prev_of[0] = None;
@@ -196,9 +197,9 @@ fn main() {
         }
     }
 
-    // Each chunk can be both a predecessor (back half) and a successor
-    // (front half), so next_of can form cycles with no chain start.
-    // We broke chunk 0's cycle above; verify no others exist.
+    // Each chunk can be both a predecessor (back half) and a successor (front
+    // half), so next_of can form cycles with no chain start. We broke chunk 0's
+    // cycle above; verify no others exist.
     assert_eq!(
         dense_to_halfdense.len(),
         num_chunks,
