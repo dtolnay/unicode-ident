@@ -16,7 +16,8 @@
     clippy::match_wild_err_arm,
     clippy::module_name_repetitions,
     clippy::too_many_lines,
-    clippy::uninlined_format_args
+    clippy::uninlined_format_args,
+    clippy::unwrap_or_default
 )]
 
 mod output;
