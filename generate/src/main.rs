@@ -199,7 +199,11 @@ fn main() {
     // Each chunk can be both a predecessor (back half) and a successor
     // (front half), so next_of can form cycles with no chain start.
     // We broke chunk 0's cycle above; verify no others exist.
-    assert_eq!(dense_to_halfdense.len(), num_chunks, "not all chunks were laid out");
+    assert_eq!(
+        dense_to_halfdense.len(),
+        num_chunks,
+        "not all chunks were laid out",
+    );
 
     for index in &mut index_start {
         *index = dense_to_halfdense[index];
