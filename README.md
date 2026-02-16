@@ -41,11 +41,11 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-ident`** | 10.0 K | 0.41 ns | 0.44 ns | 0.44 ns | 0.93 ns |
-| **`unicode-xid`** | 12.0 K | 2.43 ns | 2.50 ns | 2.85 ns | 8.65 ns |
-| **`ucd-trie`** | 10.4 K | 1.28 ns | 1.25 ns | 1.20 ns | 1.97 ns |
-| **`fst`** | 144 K | 50.9 ns | 51.0 ns | 48.5 ns | 26.7 ns |
-| **`roaring`** | 66.1 K | 4.28 ns | 4.22 ns | 4.25 ns | 4.61 ns |
+| **`unicode-ident`** | 10.0 K | 0.36 ns | 0.37 ns | 0.37 ns | 0.43 ns |
+| **`unicode-xid`** | 12.0 K | 1.63 ns | 1.70 ns | 1.82 ns | 4.56 ns |
+| **`ucd-trie`** | 10.4 K | 1.01 ns | 0.73 ns | 0.97 ns | 1.09 ns |
+| **`fst`** | 144 K | 22.0 ns | 21.9 ns | 20.9 ns | 10.5 ns |
+| **`roaring`** | 66.1 K | 1.91 ns | 1.90 ns | 1.94 ns | 2.67 ns |
 
 Source code for the benchmark is provided in the *bench* directory of this repo
 and may be repeated by running `cargo criterion`.
