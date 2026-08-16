@@ -10,6 +10,15 @@ keywords = ["unicode", "xid"]
 license = "(MIT OR Apache-2.0) AND Unicode-3.0"
 repository = "https://github.com/dtolnay/unicode-ident"
 rust-version = "1.71"
+include = [
+    "/Cargo.toml",
+    "/LICENSE-APACHE",
+    "/LICENSE-MIT",
+    "/LICENSE-UNICODE",
+    "/README.md",
+    "/src/**",
+    "/tests/**",
+]
 
 [dev-dependencies]
 fst = "0.4"
