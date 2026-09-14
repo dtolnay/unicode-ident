@@ -234,20 +234,22 @@ data structure is straight-line code with no need for branching.
 
 ```asm
 is_xid_start:
-	mov eax, edi
-	mov ecx, offset unicode_ident::ZERO
-	shr eax, 9
-	cmp edi, 210432
-	lea rax, [rax + unicode_ident::tables::TRIE_START]
-	cmovb rcx, rax
-	movzx eax, byte ptr [rcx]
-	mov ecx, 1539
-	bextr ecx, edi, ecx
-	and edi, 7
-	shl eax, 5
-	movzx eax, byte ptr [rax + rcx + unicode_ident::tables::LEAF]
-	bt eax, edi
-	setb al
+	mov ecx, edi
+	mov eax, ecx
+	shr eax, 3
+	mov edx, ecx
+	shr edx, 9
+	cmp ecx, 210432
+	lea rdx, [rdx + unicode_ident::tables::TRIE_START]
+	mov esi, offset unicode_ident::tables::TRIE_START+17
+	cmovb rsi, rdx
+	movzx edx, byte ptr [rsi]
+	shl edx, 5
+	and eax, 63
+	movzx eax, byte ptr [rdx + rax + unicode_ident::tables::LEAF]
+	and cl, 7
+	shr al, cl
+	and al, 1
 	ret
 ```
 
