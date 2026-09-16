@@ -39,4 +39,4 @@ rustdoc-args = [
 ]
 
 [patch.crates-io]
-unicode-xid = { git = "https://github.com/dtolnay-contrib/unicode-xid", branch = "unicode17.0.0" }
+unicode-xid = { git = "https://github.com/dtolnay-contrib/unicode-xid", branch = "unicode18.0.0" }
