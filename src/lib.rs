@@ -43,10 +43,10 @@
 //!
 //! | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 //! |---|---|---|---|---|---|
-//! | **`unicode-ident`** | 10.0 K | 0.36 ns | 0.37 ns | 0.37 ns | 0.43 ns |
-//! | **`unicode-xid`** | 12.0 K | 1.63 ns | 1.70 ns | 1.82 ns | 4.56 ns |
-//! | **`ucd-trie`** | 10.4 K | 1.01 ns | 0.73 ns | 0.97 ns | 1.09 ns |
-//! | **`fst`** | 144 K | 22.0 ns | 21.9 ns | 20.9 ns | 10.5 ns |
+//! | **`unicode-ident`** | 10.3 K | 0.36 ns | 0.37 ns | 0.37 ns | 0.43 ns |
+//! | **`unicode-xid`** | 12.2 K | 1.63 ns | 1.70 ns | 1.82 ns | 4.56 ns |
+//! | **`ucd-trie`** | 10.8 K | 1.01 ns | 0.73 ns | 0.97 ns | 1.09 ns |
+//! | **`fst`** | 149 K | 22.0 ns | 21.9 ns | 20.9 ns | 10.5 ns |
 //! | **`roaring`** | 66.1 K | 1.91 ns | 1.90 ns | 1.94 ns | 2.67 ns |
 //!
 //! Source code for the benchmark is provided in the *bench* directory of this
