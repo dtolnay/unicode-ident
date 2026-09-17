@@ -235,9 +235,9 @@ data structure is straight-line code with no need for branching.
 ```asm
 is_xid_start:
 	mov eax, edi
-	mov ecx, offset unicode_ident::ZERO
 	shr eax, 9
-	cmp edi, 210432
+	cmp edi, 261632
+	mov ecx, offset unicode_ident::tables::TRIE_START+17
 	lea rax, [rax + unicode_ident::tables::TRIE_START]
 	cmovb rcx, rax
 	movzx eax, byte ptr [rcx]

@@ -20,6 +20,8 @@ pub fn output(
     index_start: &[u8],
     index_continue: &[u8],
     halfdense: &[u8],
+    zero_start: usize,
+    zero_continue: usize,
 ) -> Output {
     let mut out = Output::new();
     writeln!(out, "{}", HEAD);
@@ -50,6 +52,14 @@ pub fn output(
     writeln!(out);
 
     writeln!(out, "pub(crate) const CHUNK: usize = {};", CHUNK);
+    writeln!(out);
+
+    writeln!(out, "// Positions of entries for the all-zero chunk.");
+    writeln!(out, "pub(crate) const ZERO_START: usize = {zero_start};");
+    writeln!(
+        out,
+        "pub(crate) const ZERO_CONTINUE: usize = {zero_continue};"
+    );
     writeln!(out);
 
     writeln!(

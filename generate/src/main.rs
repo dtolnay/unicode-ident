@@ -218,7 +218,24 @@ fn main() {
         *index = dense_to_halfdense[index];
     }
 
-    let out = write::output(&properties, &index_start, &index_continue, &halfdense);
+    // Fallback for codepoints beyond the end of the trie.
+    let zero_start = index_start
+        .iter()
+        .position(|&i| i == 0)
+        .expect("no all-zero chunk");
+    let zero_continue = index_continue
+        .iter()
+        .position(|&i| i == 0)
+        .expect("no all-zero chunk");
+
+    let out = write::output(
+        &properties,
+        &index_start,
+        &index_continue,
+        &halfdense,
+        zero_start,
+        zero_continue,
+    );
     let path = unicode_ident_dir.join(TABLES);
     if let Err(err) = fs::write(&path, out) {
         let _ = writeln!(io::stderr(), "{}: {err}", path.display());
