@@ -59,8 +59,8 @@ fn main() {
     let empty_chunk = [0u8; CHUNK];
     new_chunk(empty_chunk);
 
-    let mut index_start = Vec::<u8>::new();
-    let mut index_continue = Vec::<u8>::new();
+    let mut trie_start = Vec::<u8>::new();
+    let mut trie_continue = Vec::<u8>::new();
     for i in 0..(u32::from(char::MAX) + 1) / CHUNK as u32 / 8 {
         let mut start_bits = empty_chunk;
         let mut continue_bits = empty_chunk;
@@ -77,15 +77,15 @@ fn main() {
                 }
             }
         }
-        index_start.push(new_chunk(start_bits));
-        index_continue.push(new_chunk(continue_bits));
+        trie_start.push(new_chunk(start_bits));
+        trie_continue.push(new_chunk(continue_bits));
     }
 
-    while let Some(0) = index_start.last() {
-        index_start.pop();
+    while let Some(0) = trie_start.last() {
+        trie_start.pop();
     }
-    while let Some(0) = index_continue.last() {
-        index_continue.pop();
+    while let Some(0) = trie_continue.last() {
+        trie_continue.pop();
     }
 
     // Compress the LEAF array by overlapping chunks at half-chunk boundaries.
@@ -169,7 +169,7 @@ fn main() {
         }
     }
 
-    // Chunk 0 (all zeros) is special and must be laid out first at halfdense
+    // Chunk 0 (all zeros) is special and must be laid out first at leaf
     // position 0, because the runtime defaults to index 0 for codepoints beyond
     // the trie. Remove any incoming edge so chunk 0 becomes a chain start.
     if let Some(prev) = prev_of[0] {
@@ -177,27 +177,27 @@ fn main() {
         prev_of[0] = None;
     }
 
-    // Lay out chains into halfdense, starting with chunk 0's chain.
-    let mut halfdense = Vec::<u8>::new();
-    let mut dense_to_halfdense = Map::<u8, u8>::new();
+    // Lay out chains into leaf, starting with chunk 0's chain.
+    let mut leaf = Vec::<u8>::new();
+    let mut trie_to_halfchunk_index = Map::<u8, u8>::new();
 
     for start in (0..num_chunks).filter(|&i| prev_of[i].is_none()) {
-        dense_to_halfdense.insert(
+        trie_to_halfchunk_index.insert(
             start as u8,
-            u8::try_from(halfdense.len() / (CHUNK / 2)).expect("exceeded 256 half-chunks"),
+            u8::try_from(leaf.len() / (CHUNK / 2)).expect("exceeded 256 half-chunks"),
         );
-        halfdense.extend_from_slice(&front_of[start]);
-        halfdense.extend_from_slice(&back_of[start]);
+        leaf.extend_from_slice(&front_of[start]);
+        leaf.extend_from_slice(&back_of[start]);
 
         // Write the rest of the chain: each chunk's front half overlaps the
         // previous chunk's back half, so only append the back half.
         let mut curr = start;
         while let Some(next) = next_of[curr] {
-            dense_to_halfdense.insert(
+            trie_to_halfchunk_index.insert(
                 next as u8,
-                u8::try_from(halfdense.len() / (CHUNK / 2) - 1).expect("exceeded 256 half-chunks"),
+                u8::try_from(leaf.len() / (CHUNK / 2) - 1).expect("exceeded 256 half-chunks"),
             );
-            halfdense.extend_from_slice(&back_of[next]);
+            leaf.extend_from_slice(&back_of[next]);
             curr = next;
         }
     }
@@ -206,35 +206,35 @@ fn main() {
     // half), so next_of can form cycles with no chain start. We broke chunk 0's
     // cycle above; verify no others exist.
     assert_eq!(
-        dense_to_halfdense.len(),
+        trie_to_halfchunk_index.len(),
         num_chunks,
         "not all chunks were laid out",
     );
 
-    for index in &mut index_start {
-        *index = dense_to_halfdense[index];
+    for index in &mut trie_start {
+        *index = trie_to_halfchunk_index[index];
     }
-    for index in &mut index_continue {
-        *index = dense_to_halfdense[index];
+    for index in &mut trie_continue {
+        *index = trie_to_halfchunk_index[index];
     }
 
     // Fallback for codepoints beyond the end of the trie.
-    let zero_start = index_start
+    let zero_start = trie_start
         .iter()
         .position(|&i| i == 0)
         .expect("no all-zero chunk");
-    let zero_continue = index_continue
+    let zero_continue = trie_continue
         .iter()
         .position(|&i| i == 0)
         .expect("no all-zero chunk");
 
     let out = write::output(
         &properties,
-        &index_start,
-        &index_continue,
-        &halfdense,
         zero_start,
         zero_continue,
+        &trie_start,
+        &trie_continue,
+        &leaf,
     );
     let path = unicode_ident_dir.join(TABLES);
     if let Err(err) = fs::write(&path, out) {
