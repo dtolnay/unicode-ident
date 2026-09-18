@@ -17,11 +17,11 @@ pub(crate) struct Align64<T>(pub(crate) T);
 
 pub fn output(
     properties: &Properties,
-    index_start: &[u8],
-    index_continue: &[u8],
-    halfdense: &[u8],
     zero_start: usize,
     zero_continue: usize,
+    trie_start: &[u8],
+    trie_continue: &[u8],
+    leaf: &[u8],
 ) -> Output {
     let mut out = Output::new();
     writeln!(out, "{}", HEAD);
@@ -65,9 +65,9 @@ pub fn output(
     writeln!(
         out,
         "pub(crate) static TRIE_START: Align8<[u8; {}]> = Align8([",
-        index_start.len(),
+        trie_start.len(),
     );
-    for line in index_start.chunks(16) {
+    for line in trie_start.chunks(16) {
         write!(out, "   ");
         for byte in line {
             write!(out, " 0x{:02X},", byte);
@@ -80,9 +80,9 @@ pub fn output(
     writeln!(
         out,
         "pub(crate) static TRIE_CONTINUE: Align8<[u8; {}]> = Align8([",
-        index_continue.len(),
+        trie_continue.len(),
     );
-    for line in index_continue.chunks(16) {
+    for line in trie_continue.chunks(16) {
         write!(out, "   ");
         for byte in line {
             write!(out, " 0x{:02X},", byte);
@@ -95,9 +95,9 @@ pub fn output(
     writeln!(
         out,
         "pub(crate) static LEAF: Align64<[u8; {}]> = Align64([",
-        halfdense.len(),
+        leaf.len(),
     );
-    for line in halfdense.chunks(16) {
+    for line in leaf.chunks(16) {
         write!(out, "   ");
         for byte in line {
             write!(out, " 0x{:02X},", byte);
