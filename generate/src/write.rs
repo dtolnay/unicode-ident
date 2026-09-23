@@ -19,6 +19,7 @@ pub fn output(
     properties: &Properties,
     zero_start: usize,
     zero_continue: usize,
+    leaf_continue: usize,
     trie_start: &[u8],
     trie_continue: &[u8],
     leaf: &[u8],
@@ -54,11 +55,23 @@ pub fn output(
     writeln!(out, "pub(crate) const CHUNK: usize = {};", CHUNK);
     writeln!(out);
 
-    writeln!(out, "// Positions of entries for the all-zero chunk.");
+    writeln!(out, "// Position within TRIE of the all-zero chunk.");
     writeln!(out, "pub(crate) const ZERO_START: usize = {zero_start};");
     writeln!(
         out,
         "pub(crate) const ZERO_CONTINUE: usize = {zero_continue};"
+    );
+    writeln!(out);
+
+    writeln!(
+        out,
+        "// Position within LEAF of the all-zero chunk. Values in TRIE are scaled",
+    );
+    writeln!(out, "// half-chunk offsets relative to this index.");
+    writeln!(out, "pub(crate) const LEAF_START: usize = 0;");
+    writeln!(
+        out,
+        "pub(crate) const LEAF_CONTINUE: usize = {leaf_continue};",
     );
     writeln!(out);
 
