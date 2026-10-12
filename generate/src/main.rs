@@ -25,6 +25,7 @@ mod parse;
 mod write;
 
 use crate::parse::parse_xid_properties;
+use indexmap::IndexSet;
 use std::collections::BTreeMap as Map;
 use std::fs;
 use std::io::{self, Write};
@@ -41,21 +42,10 @@ fn main() {
     let ucd_dir = unicode_ident_dir.join(UCD);
     let properties = parse_xid_properties(&ucd_dir);
 
-    let mut chunkmap = Map::<[u8; CHUNK], usize>::new();
-    let mut dense = Vec::<[u8; CHUNK]>::new();
-    let mut new_chunk = |chunk| {
-        if let Some(prev) = chunkmap.get(&chunk) {
-            *prev
-        } else {
-            let new = dense.len();
-            dense.push(chunk);
-            chunkmap.insert(chunk, new);
-            new
-        }
-    };
+    let mut chunkmap = IndexSet::<[u8; CHUNK]>::new();
 
     let empty_chunk = [0u8; CHUNK];
-    new_chunk(empty_chunk);
+    chunkmap.insert(empty_chunk);
 
     let mut trie_start = Vec::<usize>::new();
     let mut trie_continue = Vec::<usize>::new();
@@ -75,8 +65,8 @@ fn main() {
                 }
             }
         }
-        trie_start.push(new_chunk(start_bits));
-        trie_continue.push(new_chunk(continue_bits));
+        trie_start.push(chunkmap.insert_full(start_bits).0);
+        trie_continue.push(chunkmap.insert_full(continue_bits).0);
     }
 
     while let Some(0) = trie_start.last() {
@@ -93,13 +83,13 @@ fn main() {
     // modeling this as a bipartite matching problem (left side = back halves,
     // right side = front halves) and solving with Kuhn's algorithm.
 
-    let num_chunks = dense.len();
+    let num_chunks = chunkmap.len();
 
-    let front_of: Vec<[u8; CHUNK / 2]> = dense
+    let front_of: Vec<[u8; CHUNK / 2]> = chunkmap
         .iter()
         .map(|c| c[..CHUNK / 2].try_into().unwrap())
         .collect();
-    let back_of: Vec<[u8; CHUNK / 2]> = dense
+    let back_of: Vec<[u8; CHUNK / 2]> = chunkmap
         .iter()
         .map(|c| c[CHUNK / 2..].try_into().unwrap())
         .collect();
