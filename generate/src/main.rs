@@ -26,7 +26,7 @@ mod write;
 
 use crate::parse::parse_xid_properties;
 use indexmap::IndexSet;
-use std::collections::BTreeMap as Map;
+use std::collections::{BTreeMap as Map, BTreeSet as Set};
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -76,22 +76,97 @@ fn main() {
         trie_continue.pop();
     }
 
-    // Compress the LEAF array by overlapping chunks at half-chunk boundaries.
-    //
-    // If chunk i's back half equals chunk j's front half, placing them
-    // adjacently saves 32 bytes. We find the maximum number of such overlaps by
-    // modeling this as a bipartite matching problem (left side = back halves,
-    // right side = front halves) and solving with Kuhn's algorithm.
+    let used_start = Set::from_iter(trie_start.iter().copied());
+    let used_continue = Set::from_iter(trie_continue.iter().copied());
+    let start_region = Set::from_iter(used_start.difference(&used_continue).copied());
+    let continue_region = Set::from_iter(used_continue.iter().copied().filter(|&chunk| chunk != 0));
+    let both = Set::from_iter(used_start.intersection(&used_continue).copied());
 
-    let num_chunks = chunkmap.len();
+    let (mut leaf, start_layout) = compress(&chunkmap, &start_region, &Set::new());
+    let leaf_continue = leaf.len();
+    let (rest_of_leaf, continue_layout) = compress(&chunkmap, &continue_region, &both);
+    leaf.extend_from_slice(&rest_of_leaf);
 
-    let front_of: Vec<[u8; CHUNK / 2]> = chunkmap
-        .iter()
-        .map(|c| c[..CHUNK / 2].try_into().unwrap())
+    // Position of each chunk relative to LEAF_START and LEAF_CONTINUE
+    // respectively, in half-chunks units.
+    let continue_offset = leaf_continue / (CHUNK / 2);
+    let trie_start: Vec<u8> = trie_start
+        .into_iter()
+        .map(|chunk| {
+            let position = match start_layout.get(&chunk) {
+                Some(&position) => position,
+                None => continue_offset + continue_layout[&chunk],
+            };
+            match u8::try_from(position) {
+                Ok(index) => index,
+                Err(_) => panic!("exceeded 128.5 start chunks"),
+            }
+        })
         .collect();
-    let back_of: Vec<[u8; CHUNK / 2]> = chunkmap
+    let trie_continue: Vec<u8> = trie_continue
+        .into_iter()
+        .map(|chunk| match u8::try_from(continue_layout[&chunk]) {
+            Ok(index) => index,
+            Err(_) => panic!("exceeded 128.5 continue chunks"),
+        })
+        .collect();
+
+    // Fallback for codepoints beyond the end of the trie.
+    let zero_start = trie_start
         .iter()
-        .map(|c| c[CHUNK / 2..].try_into().unwrap())
+        .position(|&i| i == 0)
+        .expect("no all-zero chunk");
+    let zero_continue = trie_continue
+        .iter()
+        .position(|&i| i == 0)
+        .expect("no all-zero chunk");
+
+    let out = write::output(
+        &properties,
+        zero_start,
+        zero_continue,
+        leaf_continue,
+        &trie_start,
+        &trie_continue,
+        &leaf,
+    );
+    let path = unicode_ident_dir.join(TABLES);
+    if let Err(err) = fs::write(&path, out) {
+        let _ = writeln!(io::stderr(), "{}: {err}", path.display());
+        process::exit(1);
+    }
+}
+
+/// Lay out a contiguous region of the LEAF array, compressed by overlapping
+/// chunks at half-chunk boundaries.
+///
+/// If chunk i's back half equals chunk j's front half, placing them adjacently
+/// saves 32 bytes. We find the maximum number of such overlaps by modeling this
+/// as a bipartite matching problem (left side = back halves, right side = front
+/// halves) and solving with Kuhn's algorithm.
+///
+/// Returns the data of the region, and a map of original chunk index to laid
+/// out half-chunk position relative to the beginning of the region. Chunks
+/// given in `bias` are laid out as near to the front of the region as the
+/// chaining allows.
+fn compress(
+    chunkmap: &IndexSet<[u8; CHUNK]>,
+    group: &Set<usize>,
+    bias: &Set<usize>,
+) -> (Vec<u8>, Map<usize, usize>) {
+    // Chunks of this region, identified below by their position in here rather
+    // than by their index in `chunkmap`.
+    let mut members = vec![0];
+    members.extend(group.iter().copied());
+    let num_chunks = members.len();
+
+    let front_of: Vec<[u8; CHUNK / 2]> = members
+        .iter()
+        .map(|&chunk| chunkmap[chunk][..CHUNK / 2].try_into().unwrap())
+        .collect();
+    let back_of: Vec<[u8; CHUNK / 2]> = members
+        .iter()
+        .map(|&chunk| chunkmap[chunk][CHUNK / 2..].try_into().unwrap())
         .collect();
 
     // Build index from front-half value to chunk indices for efficient lookup.
@@ -165,12 +240,24 @@ fn main() {
         prev_of[0] = None;
     }
 
-    // Lay out chains into leaf, starting with chunk 0's chain.
-    let mut leaf = Vec::<u8>::new();
-    let mut trie_to_halfchunk_index = Map::<usize, usize>::new();
+    // Lay out chains into leaf, starting with chunk 0's chain, then chains that
+    // contain a preferred chunk, followed by the rest.
+    let mut chains: Vec<usize> = (0..num_chunks).filter(|&i| prev_of[i].is_none()).collect();
+    chains[1..].sort_by_key(|&(mut curr)| loop {
+        if bias.contains(&members[curr]) {
+            return false;
+        }
+        match next_of[curr] {
+            Some(next) => curr = next,
+            None => return true,
+        }
+    });
 
-    for start in (0..num_chunks).filter(|&i| prev_of[i].is_none()) {
-        trie_to_halfchunk_index.insert(start, leaf.len() / (CHUNK / 2));
+    let mut leaf = Vec::<u8>::new();
+    let mut layout = Map::<usize, usize>::new();
+
+    for start in chains {
+        layout.insert(members[start], leaf.len() / (CHUNK / 2));
         leaf.extend_from_slice(&front_of[start]);
         leaf.extend_from_slice(&back_of[start]);
 
@@ -178,7 +265,7 @@ fn main() {
         // previous chunk's back half, so only append the back half.
         let mut curr = start;
         while let Some(next) = next_of[curr] {
-            trie_to_halfchunk_index.insert(next, leaf.len() / (CHUNK / 2) - 1);
+            layout.insert(members[next], leaf.len() / (CHUNK / 2) - 1);
             leaf.extend_from_slice(&back_of[next]);
             curr = next;
         }
@@ -187,52 +274,7 @@ fn main() {
     // Each chunk can be both a predecessor (back half) and a successor (front
     // half), so next_of can form cycles with no chain start. We broke chunk 0's
     // cycle above; verify no others exist.
-    assert_eq!(
-        trie_to_halfchunk_index.len(),
-        num_chunks,
-        "not all chunks were laid out",
-    );
+    assert_eq!(layout.len(), num_chunks, "not all chunks were laid out");
 
-    let trie_start: Vec<u8> = trie_start
-        .into_iter()
-        .map(
-            |index| match u8::try_from(trie_to_halfchunk_index[&index]) {
-                Ok(index) => index,
-                Err(_) => panic!("exceeded 128.5 start chunks"),
-            },
-        )
-        .collect();
-    let trie_continue: Vec<u8> = trie_continue
-        .into_iter()
-        .map(
-            |index| match u8::try_from(trie_to_halfchunk_index[&index]) {
-                Ok(index) => index,
-                Err(_) => panic!("exceeded 128.5 continue chunks"),
-            },
-        )
-        .collect();
-
-    // Fallback for codepoints beyond the end of the trie.
-    let zero_start = trie_start
-        .iter()
-        .position(|&i| i == 0)
-        .expect("no all-zero chunk");
-    let zero_continue = trie_continue
-        .iter()
-        .position(|&i| i == 0)
-        .expect("no all-zero chunk");
-
-    let out = write::output(
-        &properties,
-        zero_start,
-        zero_continue,
-        &trie_start,
-        &trie_continue,
-        &leaf,
-    );
-    let path = unicode_ident_dir.join(TABLES);
-    if let Err(err) = fs::write(&path, out) {
-        let _ = writeln!(io::stderr(), "{}: {err}", path.display());
-        process::exit(1);
-    }
+    (leaf, layout)
 }
