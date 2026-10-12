@@ -6,4 +6,5 @@ edition = "2021"
 publish = false
 
 [dependencies]
+indexmap = "2"
 regex = "1.9"
