@@ -222,7 +222,7 @@
 //!
 //! This crate stores one 512-bit "row" of the above bitmaps in the leaf level
 //! of a trie, and a single additional level to index into the leafs. There are
-//! 134 unique 512-bit chunks across the two bitmaps.
+//! 137 unique 512-bit chunks across the two bitmaps.
 //!
 //! The chunk size of 512 bits is selected as the size that minimizes the total
 //! size of the data structure. A smaller chunk, like 256 or 128 bits, would
@@ -233,8 +233,8 @@
 //! The chunk data is compressed using the Kuhn–Munkres algorithm for bipartite
 //! matching to eliminate redundancies between the second half of any chunk and
 //! the first half of any other chunk. This achieves an additional 9%
-//! compression of the leaf level, leaving 122 chunks that can be indexed at the
-//! half-chunk level using an 8-bit index. Note that this is not the same as
+//! compression of the leaf level, leaving 124.5 chunks that can be indexed at
+//! the half-chunk level using an 8-bit index. Note that this is not the same as
 //! using chunks which are half the size, because it does not necessitate
 //! raising the size of the trie's first level.
 //!
