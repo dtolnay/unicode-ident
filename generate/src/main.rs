@@ -41,16 +41,14 @@ fn main() {
     let ucd_dir = unicode_ident_dir.join(UCD);
     let properties = parse_xid_properties(&ucd_dir);
 
-    let mut chunkmap = Map::<[u8; CHUNK], u8>::new();
+    let mut chunkmap = Map::<[u8; CHUNK], usize>::new();
     let mut dense = Vec::<[u8; CHUNK]>::new();
     let mut new_chunk = |chunk| {
         if let Some(prev) = chunkmap.get(&chunk) {
             *prev
         } else {
+            let new = dense.len();
             dense.push(chunk);
-            let Ok(new) = u8::try_from(chunkmap.len()) else {
-                panic!("exceeded 256 unique chunks");
-            };
             chunkmap.insert(chunk, new);
             new
         }
@@ -59,8 +57,8 @@ fn main() {
     let empty_chunk = [0u8; CHUNK];
     new_chunk(empty_chunk);
 
-    let mut trie_start = Vec::<u8>::new();
-    let mut trie_continue = Vec::<u8>::new();
+    let mut trie_start = Vec::<usize>::new();
+    let mut trie_continue = Vec::<usize>::new();
     for i in 0..(u32::from(char::MAX) + 1) / CHUNK as u32 / 8 {
         let mut start_bits = empty_chunk;
         let mut continue_bits = empty_chunk;
@@ -179,13 +177,10 @@ fn main() {
 
     // Lay out chains into leaf, starting with chunk 0's chain.
     let mut leaf = Vec::<u8>::new();
-    let mut trie_to_halfchunk_index = Map::<u8, u8>::new();
+    let mut trie_to_halfchunk_index = Map::<usize, usize>::new();
 
     for start in (0..num_chunks).filter(|&i| prev_of[i].is_none()) {
-        trie_to_halfchunk_index.insert(
-            start as u8,
-            u8::try_from(leaf.len() / (CHUNK / 2)).expect("exceeded 256 half-chunks"),
-        );
+        trie_to_halfchunk_index.insert(start, leaf.len() / (CHUNK / 2));
         leaf.extend_from_slice(&front_of[start]);
         leaf.extend_from_slice(&back_of[start]);
 
@@ -193,10 +188,7 @@ fn main() {
         // previous chunk's back half, so only append the back half.
         let mut curr = start;
         while let Some(next) = next_of[curr] {
-            trie_to_halfchunk_index.insert(
-                next as u8,
-                u8::try_from(leaf.len() / (CHUNK / 2) - 1).expect("exceeded 256 half-chunks"),
-            );
+            trie_to_halfchunk_index.insert(next, leaf.len() / (CHUNK / 2) - 1);
             leaf.extend_from_slice(&back_of[next]);
             curr = next;
         }
@@ -211,12 +203,24 @@ fn main() {
         "not all chunks were laid out",
     );
 
-    for index in &mut trie_start {
-        *index = trie_to_halfchunk_index[index];
-    }
-    for index in &mut trie_continue {
-        *index = trie_to_halfchunk_index[index];
-    }
+    let trie_start: Vec<u8> = trie_start
+        .into_iter()
+        .map(
+            |index| match u8::try_from(trie_to_halfchunk_index[&index]) {
+                Ok(index) => index,
+                Err(_) => panic!("exceeded 128.5 start chunks"),
+            },
+        )
+        .collect();
+    let trie_continue: Vec<u8> = trie_continue
+        .into_iter()
+        .map(
+            |index| match u8::try_from(trie_to_halfchunk_index[&index]) {
+                Ok(index) => index,
+                Err(_) => panic!("exceeded 128.5 continue chunks"),
+            },
+        )
+        .collect();
 
     // Fallback for codepoints beyond the end of the trie.
     let zero_start = trie_start
