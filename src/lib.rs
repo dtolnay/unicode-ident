@@ -48,6 +48,7 @@
 //! | **`ucd-trie`** | 10.8 K | 1.01 ns | 0.73 ns | 0.97 ns | 1.09 ns |
 //! | **`fst`** | 149 K | 22.0 ns | 21.9 ns | 20.9 ns | 10.5 ns |
 //! | **`roaring`** | 66.1 K | 1.91 ns | 1.90 ns | 1.94 ns | 2.67 ns |
+//! | **`core`** | 3.5 K | 1.86 ns | 1.83 ns | 2.39 ns | 7.11 ns |
 //!
 //! Source code for the benchmark is provided in the *bench* directory of this
 //! repo and may be repeated by running `cargo criterion`.
