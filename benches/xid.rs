@@ -14,6 +14,7 @@
     clippy::incompatible_msrv, // https://github.com/rust-lang/rust-clippy/issues/12257
     clippy::needless_pass_by_value,
 )]
+#![feature(char_is_xid)]
 
 #[path = "../tests/fst/mod.rs"]
 mod fst;
@@ -100,6 +101,14 @@ fn bench(c: &mut Criterion, group_name: &str, string: String) {
             for ch in string.chars() {
                 black_box(xid_start_bitmap.contains(ch as u32));
                 black_box(xid_continue_bitmap.contains(ch as u32));
+            }
+        });
+    });
+    group.bench_function("core", |b| {
+        b.iter(|| {
+            for ch in string.chars() {
+                black_box(ch.is_xid_start());
+                black_box(ch.is_xid_continue());
             }
         });
     });
