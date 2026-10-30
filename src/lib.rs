@@ -18,6 +18,22 @@
 //!
 //! <br>
 //!
+//! ## Example
+//!
+//! ```rust
+//! fn is_identifier(value: &str) -> bool {
+//!     use unicode_ident::{is_xid_start, is_xid_continue};
+//!
+//!     let mut chars = value.chars();
+//!     let Some(first_char) = chars.next() else { return false };
+//!     is_xid_start(first_char) && chars.all(|c| is_xid_continue(c))
+//! }
+//!
+//!
+//! assert_eq!(is_identifier("cat1"), true);
+//! assert_eq!(is_identifier("42"), false);
+//! ```
+//!
 //! ## Comparison of performance
 //!
 //! The following table shows a comparison between five Unicode identifier
